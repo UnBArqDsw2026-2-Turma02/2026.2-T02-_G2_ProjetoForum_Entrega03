@@ -47,7 +47,7 @@ def get_estrategia_fallback() -> EstrategiaSelecaoAnuncio:
     )
 
 
-def get_controlador_entrega(
+def get_delivery_service(
     configuracao: Annotated[ConfiguracaoAds, Depends(get_configuracao_ads)],
     seletor: Annotated[SeletorDeEstrategia, Depends(get_seletor)],
     fallback: Annotated[EstrategiaSelecaoAnuncio, Depends(get_estrategia_fallback)],

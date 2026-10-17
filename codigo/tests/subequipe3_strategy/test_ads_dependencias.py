@@ -5,7 +5,7 @@ from subequipe3_strategy.ads.service import dependencias
 from subequipe3_strategy.ads.service.dependencias import (
     ConfiguracaoAds,
     get_configuracao_ads,
-    get_controlador_entrega,
+    get_delivery_service,
     get_estrategia_fallback,
     get_repositorio_ads,
     get_seletor,
@@ -55,8 +55,8 @@ def test_controlador_novo_por_requisicao_com_a_politica_configurada():
         configuracao=ConfiguracaoAds(), seletor=get_seletor(),
         fallback=fallback, repositorio=repositorio,
     )
-    primeiro = get_controlador_entrega(**argumentos)
-    segundo = get_controlador_entrega(**argumentos)
+    primeiro = get_delivery_service(**argumentos)
+    segundo = get_delivery_service(**argumentos)
     assert primeiro is not segundo
     assert primeiro.politica_atual == "match_exato"
 
@@ -64,7 +64,7 @@ def test_controlador_novo_por_requisicao_com_a_politica_configurada():
 def test_politica_configurada_inexistente_responde_503():
     repositorio = get_repositorio_ads()
     with pytest.raises(HTTPException) as erro:
-        get_controlador_entrega(
+        get_delivery_service(
             configuracao=ConfiguracaoAds(politica="maior_lance"), seletor=get_seletor(),
             fallback=FallbackDeTeste(repositorio.anuncio_padrao), repositorio=repositorio,
         )

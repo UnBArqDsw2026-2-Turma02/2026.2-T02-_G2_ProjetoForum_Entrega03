@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 
 from ..model.repositorio import AnuncioNaoEncontrado, CampanhaInelegivel
-from ..service.dependencias import get_controlador_entrega, get_pergunta_view
+from ..service.dependencias import get_delivery_service, get_pergunta_view
 from ..view.pergunta_view import PerguntaView
 from .controlador_entrega import ControladorEntrega, PerguntaNaoEncontrada
 
@@ -32,7 +32,7 @@ INDISPONIVEL = {503: {"description": "Política ou estratégia de fallback não 
 def exibir_pergunta(
     pergunta_id: UUID,
     request: Request,
-    controlador: Annotated[ControladorEntrega, Depends(get_controlador_entrega)],
+    controlador: Annotated[ControladorEntrega, Depends(get_delivery_service)],
     view: Annotated[PerguntaView, Depends(get_pergunta_view)],
 ) -> HTMLResponse:
     try:
@@ -64,7 +64,7 @@ def exibir_pergunta(
 )
 def registrar_clique(
     anuncio_id: UUID,
-    controlador: Annotated[ControladorEntrega, Depends(get_controlador_entrega)],
+    controlador: Annotated[ControladorEntrega, Depends(get_delivery_service)],
 ) -> Response:
     try:
         controlador.registrar_clique(anuncio_id)

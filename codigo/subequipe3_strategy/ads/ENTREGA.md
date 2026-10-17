@@ -50,7 +50,7 @@ As duas rotas aparecem no Swagger UI (`/docs`), na tag "Anúncios".
 
 - **Caminho da página:** o PR #32 (SubEquipe_01) define `GET /perguntas/{pergunta_id}` em JSON. Registrar o mesmo caminho faria o FastAPI atender apenas a rota registrada primeiro, sem aviso. Por isso a página usa `/perguntas/{pergunta_id}/pagina`, alternativa prevista na própria #27. Unificar HTML e JSON em um caminho exige acordo com a SubEquipe_01.
 - **Mesma aplicação FastAPI:** `subequipe3_strategy/main.py` importa o `app` de `subequipe1_factory_method.main` e acrescenta o router de Ads. Nenhum arquivo da SubEquipe_01 é alterado, e as rotas de Conteúdo continuam disponíveis.
-- **Context por requisição:** `get_controlador_entrega` monta um `ControladorEntrega` novo a cada requisição, sobre um `RepositorioAds` compartilhado no processo. Não há singleton mutável de estratégia.
+- **Context por requisição:** `get_delivery_service` (nome do diagrama técnico) monta um `ControladorEntrega` novo a cada requisição, sobre um `RepositorioAds` compartilhado no processo. Não há singleton mutável de estratégia.
 - **Política configurada:** vem da variável de ambiente `ADS_POLITICA` (padrão `match_exato`). Política não registrada responde 503 informando as opções disponíveis.
 - **Visualização:** registrada uma vez por exibição, somente depois de a página ser montada. Selecionar, isoladamente, não registra eventos.
 - **Escape:** título e tags passam pelo escape automático do Jinja2. O fragmento do anúncio só é marcado como seguro depois de o `AnuncioResponse` revalidar as URLs; o domínio da #24 já escapa o conteúdo do banner.
