@@ -55,6 +55,26 @@ As duas rotas aparecem no Swagger UI (`/docs`), na tag "Anúncios".
 - **Visualização:** registrada uma vez por exibição, somente depois de a página ser montada. Selecionar, isoladamente, não registra eventos.
 - **Escape:** título e tags passam pelo escape automático do Jinja2. O fragmento do anúncio só é marcado como seguro depois de o `AnuncioResponse` revalidar as URLs; o domínio da #24 já escapa o conteúdo do banner.
 
+## Rastreabilidade com os diagramas de classes
+
+Referências: diagrama de classes técnico ("versão corrigida") e diagrama conceitual do Strategy, no quadro do Miro do grupo. Quando os diagramas divergem entre si, prevalecem as issues #23 a #28, que registram a decisão do grupo.
+
+| Elemento do diagrama técnico | Código | Situação |
+|---|---|---|
+| `ControladorEntrega` com `seletor`, `estrategia`, `fallback` e as três portas de repositório | `controller/controlador_entrega.py` | Igual |
+| `definir_estrategia`, `registrar_visualizacao`, `registrar_clique` | Mesmos nomes e parâmetros | Igual |
+| `entregar_anuncio(pergunta_id) : Anuncio` | Devolve `EntregaAnuncio` (anúncio, pergunta, política usada e se houve fallback) | Adaptação: a página precisa da pergunta e de saber se o anúncio veio do fallback |
+| `SeletorDeEstrategia` com `estrategias: dict` e `escolher(politica)` | `service/seletor.py` | Igual |
+| `dependencies.get_delivery_service` | `service/dependencias.py` | Igual; recebe um `RepositorioAds` que atende às três portas |
+| `ads_router.exibir_pergunta` e `ads_router.registrar_clique` | `controller/rotas.py` | Mesmas funções e respostas (204, 404) e o 409 pedido na #27 |
+| `GET /perguntas/{pergunta_id}` | `GET /perguntas/{pergunta_id}/pagina` | Adaptação prevista na #27 (ver Decisões) |
+| `PerguntaView.renderizar(pergunta_id, anuncio, banner_html)` | `renderizar(request, entrega)` | Adaptação: o Jinja2 exige o `request`, e a página mostra título e tags da pergunta |
+| `AnuncioResponse` como DTO do template | Usado pela view para revalidar as URLs | Igual (#24) |
+| IDs `int` | `UUID` | Adaptação definida na #24, acompanhando a `Pergunta` do fórum |
+| Adaptadores SQLAlchemy | Repositório em memória | Adaptação definida no épico #23 |
+
+O rodapé "Fluxo de entregarAnuncio" do diagrama técnico diz que o seletor escolhe a estratégia contextual ou a genérica conforme o casamento de tags. O código segue as notas do próprio diagrama, o diagrama conceitual e o épico #23: o seletor resolve a política configurada, e o fallback é decidido pelo Context quando a estratégia devolve `None`. O épico já registra esse rodapé como inconsistência a corrigir no quadro.
+
 ## Dependências pendentes
 
 | Dependência | Efeito atual | Como fica após a integração |
