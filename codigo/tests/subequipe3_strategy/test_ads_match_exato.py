@@ -4,10 +4,10 @@ from uuid import UUID
 
 import pytest
 
-from app.ads.model.campanha import StatusCampanha, Tag
-from app.ads.model.contexto import Pergunta
-from app.ads.model.match_exato import EstrategiaMatchExatoDeTag
-from app.ads.model.strategies import EstrategiaSelecaoAnuncio
+from subequipe3_strategy.ads.model.campanha import StatusCampanha, Tag
+from subequipe3_strategy.ads.model.contexto import Pergunta
+from subequipe3_strategy.ads.model.match_exato import EstrategiaMatchExatoDeTag
+from subequipe3_strategy.ads.model.strategies import EstrategiaSelecaoAnuncio
 
 
 def pergunta(*nomes):

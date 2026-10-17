@@ -4,10 +4,10 @@ from uuid import UUID
 
 import pytest
 
-from app.ads.model.anuncio import AnuncioGenerico
-from app.ads.model.campanha import StatusCampanha
-from app.ads.model.contexto import Pergunta
-from app.ads.model.repositorio import (
+from subequipe3_strategy.ads.model.anuncio import AnuncioGenerico
+from subequipe3_strategy.ads.model.campanha import StatusCampanha
+from subequipe3_strategy.ads.model.contexto import Pergunta
+from subequipe3_strategy.ads.model.repositorio import (
     AnuncioNaoEncontrado, CampanhaInelegivel, RepositorioAds,
     RepositorioCampanhas, RepositorioMetricas, RepositorioPerguntas,
 )

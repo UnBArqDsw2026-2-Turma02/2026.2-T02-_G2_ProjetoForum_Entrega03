@@ -4,13 +4,13 @@ from uuid import UUID
 import pytest
 from pydantic import ValidationError
 
-from app.ads.model.anuncio import (
+from subequipe3_strategy.ads.model.anuncio import (
     Anuncio, AnuncioGenerico, EstatisticasAds, FormatoAnuncio,
 )
-from app.ads.model.campanha import Campanha, StatusCampanha, Tag
-from app.ads.model.contexto import Pergunta, projetar_pergunta
-from app.ads.model.strategies import EstrategiaSelecaoAnuncio
-from app.ads.view.schemas import AnuncioResponse
+from subequipe3_strategy.ads.model.campanha import Campanha, StatusCampanha, Tag
+from subequipe3_strategy.ads.model.contexto import Pergunta, projetar_pergunta
+from subequipe3_strategy.ads.model.strategies import EstrategiaSelecaoAnuncio
+from subequipe3_strategy.ads.view.schemas import AnuncioResponse
 from subequipe1_factory_method.produtos import Pergunta as PerguntaConteudo
 
 

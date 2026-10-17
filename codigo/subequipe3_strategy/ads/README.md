@@ -14,6 +14,21 @@ Contratos compartilhados da issue #24; a implementação de match exato é entre
 
 `AnuncioGenerico` é um modelo de anúncio; sua presença não significa que a estratégia de fallback da #26 já foi implementada.
 
+## Organização por subequipe
+
+```text
+codigo/
+  subequipe1_factory_method/     # Conteúdo — subequipe 01
+  subequipe3_strategy/           # Strategy — subequipe 03
+    ads/
+      model/                    # Domínio, estratégias e repositórios
+      view/                     # DTOs de apresentação
+  tests/
+    subequipe3_strategy/        # Testes e fixtures da subequipe 03
+```
+
+O namespace público de Ads é `subequipe3_strategy.ads`. Os imports da subequipe 01 permanecem intactos; a projeção usa explicitamente `subequipe1_factory_method.produtos.Pergunta`. As futuras camadas service/controller da #27 devem ser criadas dentro de `subequipe3_strategy/ads/`, sem outra aplicação FastAPI isolada. A estrutura interna de camadas é preservada; a mudança de diretório não muda os contratos nem os algoritmos.
+
 ## Contrato das estratégias
 
 ```python
@@ -36,8 +51,8 @@ O requisito anterior RF02 mencionava maior lance/CPC. A revisão das issues pass
 O código atual de `subequipe1_factory_method.produtos.Pergunta` fornece UUID e título, mas ainda não fornece tags. `contexto.Pergunta` é uma projeção de leitura, não uma entidade substituta. Use o adaptador com tags obtidas explicitamente da futura integração:
 
 ```python
-from app.ads.model.campanha import Tag
-from app.ads.model.contexto import projetar_pergunta
+from subequipe3_strategy.ads.model.campanha import Tag
+from subequipe3_strategy.ads.model.contexto import projetar_pergunta
 
 # pergunta_conteudo é a instância original do módulo Conteúdo.
 projecao = projetar_pergunta(pergunta_conteudo, tags=[Tag("python")])
@@ -80,7 +95,7 @@ A partir de `codigo/`:
 
 ```python
 from uuid import UUID
-from app.ads.model.repositorio import RepositorioAds
+from subequipe3_strategy.ads.model.repositorio import RepositorioAds
 
 repo = RepositorioAds.seed()
 pergunta = repo.obter(UUID(int=101))
@@ -104,4 +119,4 @@ Os testes cobrem domínio, URLs/HTML, DTO Pydantic, preservação da identidade 
 
 A seleção da #25 está documentada em `MATCH_EXATO.md`, distribuído junto da implementação dessa estratégia.
 
-Os testes de Ads ficam em `tests/ads/`, com fixtures locais para evitar conflito com o `conftest.py` do PR #32 (subequipe 01). O pytest.ini segue o mesmo conteúdo proposto naquele PR. O intervalo de pytest no requirements-dev é compatível com o pin 9.1.1 proposto pela subequipe 01; a validação local desta alteração foi feita com pytest 7.4.4.
+Os testes de Ads ficam em `tests/subequipe3_strategy/`, com fixtures locais para evitar conflito com o `conftest.py` do PR #32 (subequipe 01). O pytest.ini segue o mesmo conteúdo proposto naquele PR. O intervalo de pytest no requirements-dev é compatível com o pin 9.1.1 proposto pela subequipe 01; a validação local desta alteração foi feita com pytest 7.4.4.
