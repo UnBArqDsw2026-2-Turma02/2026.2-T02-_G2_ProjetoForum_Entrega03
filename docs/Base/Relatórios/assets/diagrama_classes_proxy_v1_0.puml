@@ -1,0 +1,146 @@
+@startuml
+title Proxy de proteção — votação positiva padrão\nDiagrama de Classes · v1.0
+footer Leonardo de Aquino · 16/10/2026 · G2 / T02
+
+hide circle
+hide empty members
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam packageStyle rectangle
+skinparam nodesep 35
+skinparam ranksep 65
+skinparam linetype ortho
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #334155
+  ArrowColor #475569
+  FontColor #172554
+}
+
+package "Participantes do padrão" as Padrao #EFF6FF {
+  class ClienteVotacaoFastAPI <<Client>> {
+    + registrar_voto(s: SolicitacaoVotoPositivo): ResultadoVotacao
+  }
+  interface ServicoVotacao <<interface, Subject>> {
+    + votar(s: SolicitacaoVotoPositivo): ResultadoVotacao
+  }
+  class ProxyProtecaoVotacao <<Proxy>> {
+    - reputacao_minima: int = 15
+    + votar(s: SolicitacaoVotoPositivo): ResultadoVotacao
+  }
+  class ServicoVotacaoReal <<RealSubject>> {
+    - votos: Voto [0..*]
+    - eventos: EventoReputacao [0..*]
+    + votar(s: SolicitacaoVotoPositivo): ResultadoVotacao
+  }
+  ClienteVotacaoFastAPI --> "servico\n1" ServicoVotacao
+  ProxyProtecaoVotacao .up.|> ServicoVotacao
+  ServicoVotacaoReal .up.|> ServicoVotacao
+  ProxyProtecaoVotacao -[norank]-> "real\n1" ServicoVotacao
+}
+
+package "Dados da operação" as Dados #F8FAFC {
+  class SolicitacaoVotoPositivo <<dados>> {
+    + votante: Usuario [1]
+    + alvo: ConteudoVotavel [1]
+    + dia: date
+  }
+  class ResultadoVotacao <<dados>> {
+    + codigo: CodigoResultado
+    + mensagem: str
+    + voto: Voto [0..1]
+    + evento: EventoReputacao [0..1]
+  }
+  enum CodigoResultado <<enumeration>> {
+    REGISTRADO
+    REPUTACAO_INSUFICIENTE
+    COTA_ESGOTADA
+  }
+  note as RegraResultado
+    {REGISTRADO: voto e evento presentes;
+    rejeições: voto e evento ausentes.}
+  end note
+  ResultadoVotacao .. RegraResultado
+  SolicitacaoVotoPositivo -[hidden]right-> ResultadoVotacao
+  ResultadoVotacao -[hidden]down-> CodigoResultado
+  CodigoResultado -[hidden]right-> RegraResultado
+}
+
+package "Cota diária\n" as Cotas #FFF7ED {
+  interface CotaDiaria <<interface>> {
+    + consultar_uso(usuario_id: str, dia: date): int
+    + disponivel(usuario_id: str, dia: date): bool
+    + registrar_consumo(usuario_id: str, dia: date): None
+  }
+  class CotaDiariaEmMemoria {
+    + limite: int = 3
+    - consumos: dict[tuple[str, date], int]
+    + consultar_uso(usuario_id: str, dia: date): int
+    + disponivel(usuario_id: str, dia: date): bool
+    + registrar_consumo(usuario_id: str, dia: date): None
+  }
+  CotaDiariaEmMemoria .up.|> CotaDiaria
+  note as RegraCota
+    Proxy e serviço real compartilham
+    a mesma instância de cota.
+    Consultas não modificam consumos.
+  end note
+  CotaDiariaEmMemoria .. RegraCota
+}
+
+package "Domínio simulado" as Dominio #F0FDF4 {
+  class Usuario {
+    + id: str
+    + reputacao: int
+  }
+  class ConteudoVotavel <<simulado>> {
+    + id: str
+    + tipo: str
+    + autor: Usuario [1]
+    + placar: int
+  }
+  class Voto {
+    + votante: Usuario [1]
+    + alvo: ConteudoVotavel [1]
+    + dia: date
+  }
+  class EventoReputacao {
+    + voto: Voto [1]
+    + beneficiario: Usuario [1]
+    + variacao: int = 10
+  }
+  Usuario -[hidden]right-> ConteudoVotavel
+  Usuario -[hidden]down-> Voto
+  ConteudoVotavel -[hidden]down-> EventoReputacao
+  Voto -[hidden]right-> EventoReputacao
+  note as RegraTipo
+    {tipo pertence a {pergunta, resposta}}
+  end note
+  ConteudoVotavel .. RegraTipo
+  note as RegraBeneficiario
+    {beneficiario = voto.alvo.autor}
+  end note
+  EventoReputacao .. RegraBeneficiario
+}
+
+ProxyProtecaoVotacao --> "cota\n1" CotaDiaria
+ServicoVotacaoReal --> "cota\n1" CotaDiaria
+ServicoVotacaoReal -[hidden]right-> ProxyProtecaoVotacao
+ServicoVotacao -[hidden]right-> SolicitacaoVotoPositivo
+SolicitacaoVotoPositivo -[hidden]down-> Usuario
+CodigoResultado -[hidden]down-> ConteudoVotavel
+CotaDiariaEmMemoria -[hidden]right-> EventoReputacao
+
+legend left
+  Linha tracejada + triângulo: realização de interface.
+  Seta contínua: referência navegável; papel e multiplicidade na ponta.
+  Multiplicidade 1: um objeto na referência.
+  Linha tracejada sem ponta: ligação de comentário ou restrição.
+  Propriedades tipadas explicitam as referências do domínio.
+  date, str, int e None: convenções para a futura implementação Python.
+endlegend
+@enduml
