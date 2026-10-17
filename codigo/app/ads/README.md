@@ -62,6 +62,8 @@ As estatísticas retornadas por `Anuncio.obter_estatisticas()` são a mesma inst
 
 Cliques contextuais revalidam status e saldo, debitam o CPC e incrementam a métrica sob o mesmo `RLock`. Uma falha restaura saldo, status e contador. Saldo remanescente inferior ao CPC marca a campanha como ESGOTADA. Cliques genéricos incrementam apenas a métrica. Visualizações não debitam saldo. `AnuncioNaoEncontrado` e `CampanhaInelegivel` devem ser traduzidos pelo futuro controller para 404 e 409, respectivamente.
 
+`listar_ativas()` copia a lista, mas retorna as próprias instâncias de `Campanha`. A estratégia lê saldo e status depois que a trava foi liberada; portanto, não recebe um snapshot consistente nem uma reserva de saldo. Uma campanha selecionada pode ficar inelegível antes do clique. A cobrança revalida status e saldo dentro de `registrar_clique_atomico()` e recusa o clique se necessário. Essa limitação de leitura é aceita nesta demonstração em memória.
+
 Cada chamada representa um novo evento; a interface atual não recebe chave de idempotência e não deduplica solicitações repetidas. A garantia de concorrência vale para threads que usam a mesma instância, em um único processo. Não há persistência após reinício nem proteção entre múltiplos workers. SQLAlchemy/MySQL e deduplicação persistente são evolução futura, não implementada aqui.
 
 ## Domínio e apresentação
