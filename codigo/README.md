@@ -36,3 +36,12 @@ codigo/
 
 4. **Acessar a documentação interativa (Swagger UI):**
    Abra no navegador: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+
+## Ads — SubEquipe 03 (Strategy)
+
+Os contratos de Ads ficam em `subequipe3_strategy/ads/`; a estratégia de match exato é desenvolvida na issue #25 sobre essa base. A implementação preserva UUIDs do módulo Conteúdo e não altera os endpoints Factory Method existentes.
+
+Consulte [contratos, integração e limitações de Ads](subequipe3_strategy/ads/README.md). Os testes ficam em `tests/` e podem ser executados, a partir de `codigo/`, com `python -m pytest -q`. As dependências de desenvolvimento estão em `requirements-dev.txt`.
+
+O Context, a estratégia genérica, a política de maior saldo e as rotas SSR continuam nas issues dos respectivos responsáveis; esta alteração não cria uma segunda aplicação FastAPI.
