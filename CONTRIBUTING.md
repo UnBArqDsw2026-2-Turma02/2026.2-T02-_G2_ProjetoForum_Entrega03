@@ -24,7 +24,7 @@ outra pessoa do grupo. Nenhum push direto é permitido.
    - `feat/S0-setup-contratos-ads`
    - `feat/S1-estrategia-contextual`
    - `feat/S2-estrategia-generica`
-   - `feat/S3-controlador-entrega`
+   - `feat/S3-api-ad-delivery`
    - `feat/S4-estrategia-maior-saldo`
 
    Para documentação sem issue de código associada, use `docs/descricao`
@@ -111,5 +111,5 @@ deve ter uma legenda logo abaixo, no seguinte formato:
   padrão em execução - exigência explícita da disciplina para esta
   entrega (Padrões de Projeto).
 - Siga o contrato já definido para a Strategy em
-  `codigo/app/ads/model/strategies.py` e os pontos em aberto documentados
-  em `codigo/app/ads/README.md` antes de propor mudanças de design.
+  `codigo/subequipe3_strategy/ads/model/strategies.py` e os pontos em aberto documentados
+  em `codigo/subequipe3_strategy/ads/README.md` antes de propor mudanças de design.
