@@ -3,8 +3,8 @@ from uuid import UUID
 
 import pytest
 
-from app.ads.model.anuncio import AnuncioContextual
-from app.ads.model.campanha import Campanha, StatusCampanha, Tag
+from subequipe3_strategy.ads.model.anuncio import AnuncioContextual
+from subequipe3_strategy.ads.model.campanha import Campanha, StatusCampanha, Tag
 
 
 @pytest.fixture
