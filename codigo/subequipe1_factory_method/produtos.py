@@ -19,8 +19,13 @@ class Pergunta(Conteudo):
         self.status = "ABERTA"
         self.respostas: list["Resposta"] = []
 
+    def adicionar_resposta(self, resposta: "Resposta") -> None:
+        # Composição (diagrama v2): a Resposta pertence a uma única Pergunta
+        self.respostas.append(resposta)
+
 
 class Resposta(Conteudo):
-    def __init__(self, corpo: str):
+    def __init__(self, corpo: str, pergunta_id: UUID):
         super().__init__(corpo)
+        self.pergunta_id = pergunta_id
         self.aceita = False

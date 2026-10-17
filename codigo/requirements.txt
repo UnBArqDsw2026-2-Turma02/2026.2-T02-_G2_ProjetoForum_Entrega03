@@ -1,1 +1,2 @@
 fastapi[standard]==0.143.0
+pytest==9.1.1
