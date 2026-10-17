@@ -43,6 +43,17 @@ def test_menor_id_vence_saldo_cpc_e_quantidade_de_tags(criar_campanha):
         ) is menor.anuncios[0]
 
 
+def test_menor_id_da_campanha_prevalece_sobre_id_do_anuncio(criar_campanha, criar_anuncio):
+    anuncio_da_menor = criar_anuncio(id=UUID(int=99))
+    anuncio_da_maior = criar_anuncio(id=UUID(int=5))
+    menor = criar_campanha(id=UUID(int=1), anuncios=[anuncio_da_menor])
+    maior = criar_campanha(id=UUID(int=2), anuncios=[anuncio_da_maior])
+    for ordem in permutations([maior, menor]):
+        assert EstrategiaMatchExatoDeTag().selecionar_anuncio(
+            pergunta("python"), list(ordem)
+        ) is anuncio_da_menor
+
+
 def test_menor_id_de_anuncio_independe_da_ordem(criar_campanha, criar_anuncio):
     menor = criar_anuncio(id=UUID(int=10))
     maior = criar_anuncio(id=UUID(int=20))
