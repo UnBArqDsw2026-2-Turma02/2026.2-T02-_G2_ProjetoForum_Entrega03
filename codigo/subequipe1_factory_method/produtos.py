@@ -6,20 +6,26 @@ from uuid import UUID, uuid4
 class Conteudo(ABC):
     """Product abstrato: o que todo conteúdo do fórum tem em comum."""
 
-    def __init__(self, corpo: str, autor: str):
+    def __init__(self, corpo: str):
         self.id: UUID = uuid4()
         self.corpo = corpo
-        self.autor = autor
         self.data_criacao = datetime.now()
+
+    def como_pergunta(self) -> "Pergunta | None":
+        # Polimorfismo no lugar de isinstance (RNF01): só a Pergunta devolve a si mesma
+        return None
 
 
 class Pergunta(Conteudo):
-    def __init__(self, corpo: str, titulo: str, autor: str, tags: list[str] | None = None):
-        super().__init__(corpo, autor)
+    def __init__(self, corpo: str, titulo: str, tags: list[str] | None = None):
+        super().__init__(corpo)
         self.titulo = titulo
         self.tags: list[str] = list(tags or [])
         self.status = "ABERTA"
         self.respostas: list["Resposta"] = []
+
+    def como_pergunta(self) -> "Pergunta":
+        return self
 
     def adicionar_resposta(self, resposta: "Resposta") -> None:
         # Composição (diagrama v2): a Resposta pertence a uma única Pergunta
@@ -27,7 +33,7 @@ class Pergunta(Conteudo):
 
 
 class Resposta(Conteudo):
-    def __init__(self, corpo: str, autor: str, pergunta_id: UUID):
-        super().__init__(corpo, autor)
+    def __init__(self, corpo: str, pergunta_id: UUID):
+        super().__init__(corpo)
         self.pergunta_id = pergunta_id
         self.aceita = False

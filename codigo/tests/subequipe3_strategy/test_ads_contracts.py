@@ -39,7 +39,7 @@ def test_projecao_preserva_identidade_sem_modificar_conteudo():
     assert projecao.id == original.id
     assert projecao.titulo == original.titulo
     assert projecao.obter_tags() == tags
-    assert not hasattr(original, "tags")
+    assert original.tags == []
     tags.clear()
     copia = projecao.obter_tags()
     copia.clear()

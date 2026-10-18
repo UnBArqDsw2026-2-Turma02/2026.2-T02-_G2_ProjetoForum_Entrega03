@@ -23,17 +23,12 @@ class CriadorDeConteudo(ABC):
 
 class CriadorDePergunta(CriadorDeConteudo):
     def criar_conteudo(self, dados: dict) -> Conteudo:
-        return Pergunta(
-            titulo=dados["titulo"],
-            corpo=dados["corpo"],
-            autor=dados["autor"],
-            tags=dados.get("tags", []),
-        )
+        return Pergunta(corpo=dados["corpo"], titulo=dados["titulo"], tags=dados.get("tags"))
 
 
 class CriadorDeResposta(CriadorDeConteudo):
     def criar_conteudo(self, dados: dict) -> Conteudo:
         pergunta: Pergunta = dados["pergunta"]
-        resposta = Resposta(corpo=dados["corpo"], autor=dados["autor"], pergunta_id=pergunta.id)
+        resposta = Resposta(corpo=dados["corpo"], pergunta_id=pergunta.id)
         pergunta.adicionar_resposta(resposta)
         return resposta
