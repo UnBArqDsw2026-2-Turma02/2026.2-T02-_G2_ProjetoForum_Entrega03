@@ -155,5 +155,5 @@ def test_rotas_documentadas_no_openapi(cliente_ads):
 
 
 def test_rotas_de_conteudo_continuam_disponiveis(cliente_ads):
-    resposta = cliente_ads.post("/perguntas", json={"titulo": "Factory?", "corpo": "Dúvida"})
+    resposta = cliente_ads.post("/perguntas", json={"titulo": "Factory?", "corpo": "Dúvida", "autor": "Maria"})
     assert resposta.status_code == 201
