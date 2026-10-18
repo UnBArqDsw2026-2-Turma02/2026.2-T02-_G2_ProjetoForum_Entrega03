@@ -4,6 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from subequipe1_factory_method.dependencias import (
+    get_repositorio_comentarios,
     get_repositorio_perguntas,
     get_repositorio_respostas,
 )
@@ -15,11 +16,16 @@ from subequipe1_factory_method.repositorio import RepositorioConteudo
 class Repositorios:
     perguntas: RepositorioConteudo
     respostas: RepositorioConteudo
+    comentarios: RepositorioConteudo
 
 
 @pytest.fixture
 def repositorios() -> Repositorios:
-    return Repositorios(perguntas=RepositorioConteudo(), respostas=RepositorioConteudo())
+    return Repositorios(
+        perguntas=RepositorioConteudo(),
+        respostas=RepositorioConteudo(),
+        comentarios=RepositorioConteudo(),
+    )
 
 
 @pytest.fixture
@@ -27,6 +33,7 @@ def client(repositorios: Repositorios):
     # Cada teste usa repositórios novos, então um teste não enxerga dados de outro
     app.dependency_overrides[get_repositorio_perguntas] = lambda: repositorios.perguntas
     app.dependency_overrides[get_repositorio_respostas] = lambda: repositorios.respostas
+    app.dependency_overrides[get_repositorio_comentarios] = lambda: repositorios.comentarios
     with TestClient(app) as cliente:
         yield cliente
     app.dependency_overrides.clear()

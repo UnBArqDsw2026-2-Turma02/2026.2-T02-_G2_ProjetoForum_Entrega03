@@ -10,6 +10,7 @@ import pytest
 NO_LIMITE = {
     "/perguntas": {"titulo": "t", "corpo": "c", "autor": "a"},
     "/perguntas/{id}/respostas": {"corpo": "c", "autor": "a"},
+    "/perguntas/{id}/comentarios": {"corpo": "c", "autor": "a"},
 }
 
 # Cada caso zera um único campo: logo abaixo do limite
@@ -19,6 +20,8 @@ ABAIXO_DO_LIMITE = [
     ("/perguntas", "autor"),
     ("/perguntas/{id}/respostas", "corpo"),
     ("/perguntas/{id}/respostas", "autor"),
+    ("/perguntas/{id}/comentarios", "corpo"),
+    ("/perguntas/{id}/comentarios", "autor"),
 ]
 
 
