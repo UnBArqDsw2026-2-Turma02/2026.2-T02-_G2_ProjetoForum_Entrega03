@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .produtos import Conteudo, Pergunta, Resposta
+from .produtos import Comentario, Conteudo, Pergunta, Resposta
 from .repositorio import RepositorioConteudo
 
 
@@ -40,3 +40,16 @@ class CriadorDeResposta(CriadorDeConteudo):
         )
         pergunta.adicionar_resposta(resposta)
         return resposta
+
+
+# Concrete Creator (GoF): implementa o Factory Method para produzir Comentarios
+class CriadorDeComentario(CriadorDeConteudo):
+    def criar_conteudo(self, dados: dict) -> Conteudo:
+        pergunta: Pergunta = dados["pergunta"]
+        comentario = Comentario(
+            corpo=dados["corpo"],
+            autor=dados["autor"],
+            pergunta_id=pergunta.id,
+        )
+        pergunta.adicionar_comentario(comentario)
+        return comentario

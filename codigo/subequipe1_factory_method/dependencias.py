@@ -5,13 +5,19 @@ from uuid import UUID
 
 from fastapi import Depends, HTTPException
 
-from .criadores import CriadorDeConteudo, CriadorDePergunta, CriadorDeResposta
+from .criadores import (
+    CriadorDeComentario,
+    CriadorDeConteudo,
+    CriadorDePergunta,
+    CriadorDeResposta,
+)
 from .produtos import Pergunta
 from .repositorio import RepositorioConteudo
 
 # Repositórios em memória: um por tipo de produto, para a busca não precisar checar tipo
 _repositorio_perguntas = RepositorioConteudo()
 _repositorio_respostas = RepositorioConteudo()
+_repositorio_comentarios = RepositorioConteudo()
 
 
 def get_repositorio_perguntas() -> RepositorioConteudo:
@@ -20,6 +26,10 @@ def get_repositorio_perguntas() -> RepositorioConteudo:
 
 def get_repositorio_respostas() -> RepositorioConteudo:
     return _repositorio_respostas
+
+
+def get_repositorio_comentarios() -> RepositorioConteudo:
+    return _repositorio_comentarios
 
 
 def get_criador_de_pergunta(
@@ -32,6 +42,12 @@ def get_criador_de_resposta(
     repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio_respostas)],
 ) -> CriadorDeConteudo:
     return CriadorDeResposta(repositorio)
+
+
+def get_criador_de_comentario(
+    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio_comentarios)],
+) -> CriadorDeConteudo:
+    return CriadorDeComentario(repositorio)
 
 
 def obter_pergunta(

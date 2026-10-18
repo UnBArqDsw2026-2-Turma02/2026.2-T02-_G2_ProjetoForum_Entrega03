@@ -3,9 +3,21 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 
 from .criadores import CriadorDeConteudo
-from .dependencias import get_criador_de_pergunta, get_criador_de_resposta, obter_pergunta
+from .dependencias import (
+    get_criador_de_comentario,
+    get_criador_de_pergunta,
+    get_criador_de_resposta,
+    obter_pergunta,
+)
 from .produtos import Pergunta
-from .schemas import PerguntaIn, PerguntaOut, RespostaIn, RespostaOut
+from .schemas import (
+    ComentarioIn,
+    ComentarioOut,
+    PerguntaIn,
+    PerguntaOut,
+    RespostaIn,
+    RespostaOut,
+)
 
 app = FastAPI(title="Fórum: Factory Method")
 
@@ -44,3 +56,23 @@ def responder_pergunta(
     criador: Annotated[CriadorDeConteudo, Depends(get_criador_de_resposta)],
 ):
     return criador.publicar({**dados.model_dump(), "pergunta": pergunta})
+
+
+# Client (GoF): o controller depende apenas da interface abstrata CriadorDeConteudo
+@app.post(
+    "/perguntas/{pergunta_id}/comentarios",
+    status_code=201,
+    response_model=ComentarioOut,
+    responses=NAO_ENCONTRADA,
+    tags=["Comentários"],
+)
+def comentar_pergunta(
+    dados: ComentarioIn,
+    pergunta: Annotated[Pergunta, Depends(obter_pergunta)],
+    criador: Annotated[CriadorDeConteudo, Depends(get_criador_de_comentario)],
+):
+    return criador.publicar({
+        "corpo": dados.corpo,
+        "autor": dados.autor,
+        "pergunta": pergunta,
+    })

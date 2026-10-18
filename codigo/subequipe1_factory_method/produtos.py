@@ -20,10 +20,14 @@ class Pergunta(Conteudo):
         self.titulo = titulo
         self.status = "ABERTA"
         self.respostas: list["Resposta"] = []
+        self.comentarios: list["Comentario"] = []
 
     def adicionar_resposta(self, resposta: "Resposta") -> None:
         # Composição (diagrama v2): a Resposta pertence a uma única Pergunta
         self.respostas.append(resposta)
+
+    def adicionar_comentario(self, comentario: "Comentario") -> None:
+        self.comentarios.append(comentario)
 
 
 # Concrete Product (GoF)
@@ -32,3 +36,10 @@ class Resposta(Conteudo):
         super().__init__(corpo, autor)
         self.pergunta_id = pergunta_id
         self.aceita = False
+
+
+# Concrete Product (GoF): Comentario é um novo tipo de Conteudo do fórum
+class Comentario(Conteudo):
+    def __init__(self, corpo: str, autor: str, pergunta_id: UUID):
+        super().__init__(corpo, autor)
+        self.pergunta_id = pergunta_id

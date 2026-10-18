@@ -15,6 +15,11 @@ class RespostaIn(BaseModel):
     autor: str = Field(min_length=1)
 
 
+class ComentarioIn(BaseModel):
+    corpo: str = Field(min_length=1)
+    autor: str = Field(min_length=1)
+
+
 class RespostaOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -23,6 +28,16 @@ class RespostaOut(BaseModel):
     corpo: str
     autor: str
     aceita: bool
+    data_criacao: datetime
+
+
+class ComentarioOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    pergunta_id: UUID
+    corpo: str
+    autor: str
     data_criacao: datetime
 
 
@@ -36,3 +51,4 @@ class PerguntaOut(BaseModel):
     status: str
     data_criacao: datetime
     respostas: list[RespostaOut] = []
+    comentarios: list[ComentarioOut] = []
