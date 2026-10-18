@@ -1,0 +1,78 @@
+classDiagram
+direction TB
+class ControladorEntrega:::contexto {
+  <<Context>>
+  -estrategia : EstrategiaSelecaoAnuncio
+  -fallback : EstrategiaSelecaoAnuncio
+  +definir_estrategia(politica)
+  +entregar_anuncio(pergunta_id)
+}
+class EstrategiaSelecaoAnuncio:::contrato {
+  <<Strategy>>
+  +selecionar_anuncio(pergunta, campanhas)
+  +obter_nome()
+}
+class SeletorDeEstrategia:::contexto {
+  +escolher(politica)
+  +registrar(estrategia)
+}
+class EstrategiaMatchExatoDeTag:::estrategia {
+  <<ConcreteStrategy>>
+  +selecionar_anuncio(pergunta, campanhas)
+}
+class EstrategiaMaiorSaldoNaTag:::estrategia {
+  <<ConcreteStrategy>>
+  +selecionar_anuncio(pergunta, campanhas)
+}
+class EstrategiaAnuncioGenerico:::estrategia {
+  <<ConcreteStrategy>>
+  -anuncio_padrao : AnuncioGenerico
+  +selecionar_anuncio(pergunta, campanhas)
+}
+class Pergunta:::conteudo {
+  <<projecao_de_leitura>>
+  +titulo
+  +obter_tags()
+}
+class Tag:::conteudo {
+  +nome
+}
+class Campanha:::dominio {
+  +saldo_restante
+  +custo_por_clique
+  +esta_ativa()
+  +possui_orcamento()
+}
+class Anuncio:::dominio {
+  <<abstract>>
+  +renderizar()*
+}
+class AnuncioContextual:::dominio
+class AnuncioGenerico:::dominio
+class EstatisticasAds:::metricas {
+  +visualizacoes
+  +cliques
+}
+ControladorEntrega --> EstrategiaSelecaoAnuncio : principal e fallback
+ControladorEntrega --> SeletorDeEstrategia : configura politica
+SeletorDeEstrategia --> EstrategiaSelecaoAnuncio : registra
+EstrategiaSelecaoAnuncio <|.. EstrategiaMatchExatoDeTag
+EstrategiaSelecaoAnuncio <|.. EstrategiaMaiorSaldoNaTag
+EstrategiaSelecaoAnuncio <|.. EstrategiaAnuncioGenerico
+ControladorEntrega ..> Pergunta : consulta
+Pergunta "0..*" --> "0..*" Tag : tags
+Campanha "0..*" --> "0..*" Tag : tags_alvo
+Campanha "0..1" --> "0..*" AnuncioContextual : agrupa
+Anuncio <|-- AnuncioContextual
+Anuncio <|-- AnuncioGenerico
+Anuncio "1" --> "1" EstatisticasAds : possui
+EstrategiaAnuncioGenerico --> AnuncioGenerico : retorna
+note for EstrategiaSelecaoAnuncio "Contextuais podem retornar ausencia de candidato.<br/>O Context aciona o generico; selecionar nao cobra nem registra eventos."
+
+classDef contexto fill:#cfe2ff,stroke:#7794ba,color:#172b4d
+classDef estrategia fill:#dceaff,stroke:#7794ba,color:#172b4d
+classDef contrato fill:#ffffff,stroke:#718096,color:#172b4d
+classDef conteudo fill:#ffdfbd,stroke:#cb884c,color:#50351b
+classDef dominio fill:#ffd4d4,stroke:#b77575,color:#503030
+classDef api fill:#e7ddff,stroke:#9780bd,color:#35254e
+classDef metricas fill:#d6efdd,stroke:#71a684,color:#21482f
