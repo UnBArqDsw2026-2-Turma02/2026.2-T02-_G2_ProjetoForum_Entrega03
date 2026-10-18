@@ -9,7 +9,7 @@ Contratos compartilhados da issue #24; a implementação de match exato é entre
 | Domínio, portas de repositório, adaptador em memória e DTO | Implementado nesta alteração | #24 — Pedro |
 | `EstrategiaMatchExatoDeTag` | Implementação separada, consumindo estes contratos | #25 — Pedro |
 | `EstrategiaAnuncioGenerico` | Contrato disponível; implementação não incluída | #26 — Bruno |
-| `ControladorEntrega`, registro de políticas, templates e rotas | Não implementados aqui | #27 — Alberto |
+| `ControladorEntrega`, registro de políticas, templates e rotas | Implementado; ver `ENTREGA.md` | #27 — Alberto |
 | `EstrategiaMaiorSaldoNaTag` | Contrato disponível; implementação não incluída | #28 — Kaio |
 
 `AnuncioGenerico` é um modelo de anúncio; sua presença não significa que a estratégia de fallback da #26 já foi implementada.
@@ -20,14 +20,17 @@ Contratos compartilhados da issue #24; a implementação de match exato é entre
 codigo/
   subequipe1_factory_method/     # Conteúdo — subequipe 01
   subequipe3_strategy/           # Strategy — subequipe 03
+    main.py                     # Acrescenta as rotas de Ads à aplicação do fórum (#27)
     ads/
       model/                    # Domínio, estratégias e repositórios
-      view/                     # DTOs de apresentação
+      service/                  # Registro de políticas e dependências (#27)
+      controller/               # Context ControladorEntrega e rotas (#27)
+      view/                     # DTOs de apresentação, PerguntaView e template SSR
   tests/
     subequipe3_strategy/        # Testes e fixtures da subequipe 03
 ```
 
-O namespace público de Ads é `subequipe3_strategy.ads`. Os imports da subequipe 01 permanecem intactos; a projeção usa explicitamente `subequipe1_factory_method.produtos.Pergunta`. As futuras camadas service/controller da #27 devem ser criadas dentro de `subequipe3_strategy/ads/`, sem outra aplicação FastAPI isolada. A estrutura interna de camadas é preservada; a mudança de diretório não muda os contratos nem os algoritmos.
+O namespace público de Ads é `subequipe3_strategy.ads`. Os imports da subequipe 01 permanecem intactos; a projeção usa explicitamente `subequipe1_factory_method.produtos.Pergunta`. As camadas service/controller da #27 ficam dentro de `subequipe3_strategy/ads/`, e `subequipe3_strategy/main.py` acrescenta as rotas à aplicação do fórum, sem outra aplicação FastAPI isolada. A estrutura interna de camadas é preservada; a mudança de diretório não muda os contratos nem os algoritmos.
 
 ## Contrato das estratégias
 
@@ -105,7 +108,7 @@ assert repo.obter_anuncio(UUID(int=11)).titulo == "Curso de Python"
 assert repo.anuncio_padrao.id == UUID(int=30)
 ```
 
-`seed()` cria uma nova instância com fixtures de demonstração e UUIDs estáveis. Não carrega nem modifica o armazenamento de perguntas real. As URLs `/static/...` ilustram os dados do domínio; os arquivos de imagem e sua publicação não estão incluídos. Não apresentar esta demonstração como integração HTTP/SSR concluída.
+`seed()` cria uma nova instância com fixtures de demonstração e UUIDs estáveis. Não carrega nem modifica o armazenamento de perguntas real. As URLs `/static/...` apontam para imagens de exemplo em `ads/view/static/`, servidas por `subequipe3_strategy/main.py` (#27). Não apresentar esta demonstração como integração HTTP/SSR concluída.
 
 ## Testes
 

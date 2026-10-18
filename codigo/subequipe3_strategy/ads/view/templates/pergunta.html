@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ pergunta.titulo }} | Fórum</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 48rem; margin: 2rem auto; padding: 0 1rem; color: #1f2328; }
+    .tags { display: flex; gap: .5rem; flex-wrap: wrap; padding: 0; list-style: none; }
+    .tags li { background: #e7f0fb; border-radius: .25rem; padding: .1rem .5rem; font-size: .9rem; }
+    .anuncio { margin-top: 2rem; border: 1px solid #d0d7de; border-radius: .5rem; padding: 1rem; }
+    .anuncio img { max-width: 100%; display: block; }
+    .anuncio small { color: #59636e; }
+  </style>
+</head>
+<body>
+  <main>
+    <article>
+      <h1>{{ pergunta.titulo }}</h1>
+      <ul class="tags" aria-label="Tags da pergunta">
+        {% for tag in pergunta.tags %}<li>{{ tag.nome }}</li>{% endfor %}
+      </ul>
+    </article>
+
+    <aside class="anuncio" aria-label="Anúncio"
+           data-anuncio-id="{{ anuncio.id }}"
+           data-url-clique="{{ url_clique }}"
+           data-politica="{{ politica }}">
+      <small>Anúncio {% if usou_fallback %}genérico{% else %}contextual{% endif %} · política: {{ politica }}</small>
+      {{ banner }}
+    </aside>
+  </main>
+
+  <script>
+    // Registra o clique sem impedir a navegação até o destino do anúncio.
+    document.querySelectorAll(".anuncio a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        var anuncio = link.closest(".anuncio");
+        fetch(anuncio.dataset.urlClique, { method: "POST", keepalive: true });
+      });
+    });
+  </script>
+</body>
+</html>
