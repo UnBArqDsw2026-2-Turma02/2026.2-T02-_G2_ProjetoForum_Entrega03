@@ -88,6 +88,7 @@ O rodapé "Fluxo de entregarAnuncio" do diagrama técnico diz que o seletor esco
 
 - **Deduplicação:** cada chamada de clique ou exibição conta como um novo evento. Não há chave de idempotência; recarregar a página conta outra visualização.
 - **Concorrência:** o débito e a métrica são atômicos entre threads do mesmo processo, pelo `RLock` do repositório. Não há garantia entre vários workers nem persistência após reinício.
+- **Imagens e destinos de exemplo:** os banners do seed ficam em `ads/view/static/` e são servidos em `/static` por `subequipe3_strategy/main.py`; um teste confirma que toda imagem citada no seed e na página carrega. Os destinos dos anúncios (`/cursos/python`, `/comunidades/python`) são ilustrativos e não têm página no fórum.
 - **Leitura das campanhas:** a seleção lê saldo e status sem a trava. Uma campanha que se esgote entre a exibição e o clique é recusada no clique com 409.
 
 ## Executar e demonstrar

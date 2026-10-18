@@ -108,7 +108,7 @@ assert repo.obter_anuncio(UUID(int=11)).titulo == "Curso de Python"
 assert repo.anuncio_padrao.id == UUID(int=30)
 ```
 
-`seed()` cria uma nova instância com fixtures de demonstração e UUIDs estáveis. Não carrega nem modifica o armazenamento de perguntas real. As URLs `/static/...` ilustram os dados do domínio; os arquivos de imagem e sua publicação não estão incluídos. Não apresentar esta demonstração como integração HTTP/SSR concluída.
+`seed()` cria uma nova instância com fixtures de demonstração e UUIDs estáveis. Não carrega nem modifica o armazenamento de perguntas real. As URLs `/static/...` apontam para imagens de exemplo em `ads/view/static/`, servidas por `subequipe3_strategy/main.py` (#27). Não apresentar esta demonstração como integração HTTP/SSR concluída.
 
 ## Testes
 
