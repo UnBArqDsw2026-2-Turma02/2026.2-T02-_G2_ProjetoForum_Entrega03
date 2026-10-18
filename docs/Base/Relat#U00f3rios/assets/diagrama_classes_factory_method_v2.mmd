@@ -1,0 +1,68 @@
+classDiagram
+    %% Factory Method aplicado ao subdomínio Conteúdo (rascunho v2)
+    %% <|-- herança | *-- composição (parte-todo) | --> associação | ..> dependência
+    direction TB
+
+    class PerguntaController {
+        +publicarPerguntas(dados: dict) Conteudo
+        -validarDados()
+    }
+    class RespostaController {
+        +publicarResposta(perguntaId: UUID, dados: dict) Conteudo
+        +marcarComoAceita()
+        -validarAutoria()
+    }
+
+    class CriadorDeConteudo {
+        <<abstract>>
+        +publicar(dados: dict) Conteudo
+        +criar_conteudo(dados: dict) Conteudo*
+    }
+    class CriadorDePergunta {
+        +criar_conteudo(dados: dict) Conteudo
+    }
+    class CriadorDeResposta {
+        +criar_conteudo(dados: dict) Conteudo
+    }
+
+    class Conteudo {
+        <<abstract>>
+        -id: UUID
+        -corpo: str
+        -dataCriacao: DateTime
+        +editar()
+    }
+    class Pergunta {
+        -titulo: str
+        -status: str
+        +fechar()
+        +reabrir()
+        +atualizarStatus()
+        +associarTags()
+    }
+    class Resposta {
+        -aceita: bool
+        +aceitar()
+    }
+
+    %% Herança
+    CriadorDeConteudo <|-- CriadorDePergunta
+    CriadorDeConteudo <|-- CriadorDeResposta
+    Conteudo <|-- Pergunta
+    Conteudo <|-- Resposta
+
+    %% Parte-todo: a Resposta pertence a uma só Pergunta e não existe sem ela
+    Pergunta "1" *-- "0..* -respostas" Resposta
+
+    %% Clientes: conhecem só o criador abstrato
+    PerguntaController "1" --> "1 -criador" CriadorDeConteudo
+    RespostaController "1" --> "1 -criador" CriadorDeConteudo
+
+    %% Dependências do padrão
+    CriadorDeConteudo ..> Conteudo : «use»
+    CriadorDePergunta ..> Pergunta : «create»
+    CriadorDeResposta ..> Resposta : «create»
+
+    note for CriadorDeConteudo "publicar(dados):<br>c = criar_conteudo(dados)<br>...<br>return c"
+    note for CriadorDePergunta "return Pergunta(titulo, corpo)"
+    note for CriadorDeResposta "return Resposta(corpo)"
