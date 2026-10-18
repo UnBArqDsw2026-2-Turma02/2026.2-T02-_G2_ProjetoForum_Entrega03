@@ -1,4 +1,4 @@
-"""Providers do FastAPI: montam o Context de Ads a cada requisição via Depends()."""
+﻿"""Providers do FastAPI: montam o Context de Ads a cada requisiÃ§Ã£o via Depends()."""
 
 import os
 from dataclasses import dataclass
@@ -7,6 +7,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 
 from ..controller.controlador_entrega import ControladorEntrega
+from ..model.maior_saldo_strategy import EstrategiaMaiorSaldoNaTag
 from ..model.match_exato import EstrategiaMatchExatoDeTag
 from ..model.repositorio import RepositorioAds
 from ..model.strategies import EstrategiaSelecaoAnuncio
@@ -26,7 +27,7 @@ def get_configuracao_ads() -> ConfiguracaoAds:
     return ConfiguracaoAds(politica=os.environ.get(VARIAVEL_POLITICA, POLITICA_PADRAO))
 
 
-# Adaptador em memória compartilhado no processo, com dados de demonstração.
+# Adaptador em memÃ³ria compartilhado no processo, com dados de demonstraÃ§Ã£o.
 _repositorio_ads = RepositorioAds.seed()
 
 
@@ -35,15 +36,17 @@ def get_repositorio_ads() -> RepositorioAds:
 
 
 def get_seletor() -> SeletorDeEstrategia:
-    # Novas políticas (ex.: maior_saldo, Issue #28) entram apenas por registro aqui.
-    return SeletorDeEstrategia([EstrategiaMatchExatoDeTag()])
+    # Novas polÃ­ticas entram apenas por registro aqui (OCP / Issue #28).
+    return SeletorDeEstrategia(
+        [EstrategiaMatchExatoDeTag(), EstrategiaMaiorSaldoNaTag()]
+    )
 
 
 def get_estrategia_fallback() -> EstrategiaSelecaoAnuncio:
-    # A estratégia genérica pertence à Issue #26; o Context não a substitui.
+    # A estratÃ©gia genÃ©rica pertence Ã  Issue #26; o Context nÃ£o a substitui.
     raise HTTPException(
         status_code=503,
-        detail="Estratégia genérica de fallback (Issue #26) ainda não integrada.",
+        detail="EstratÃ©gia genÃ©rica de fallback (Issue #26) ainda nÃ£o integrada.",
     )
 
 
