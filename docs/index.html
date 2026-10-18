@@ -20,7 +20,11 @@
           hook.afterEach(function (html) {
             // Abrir os assets da SubEquipe 02 como arquivos, preservando os links relativos no Markdown.
             const svg = 'diagrama_classes_proxy_v1_0.svg';
-            const arquivos = [svg, 'diagrama_classes_proxy_v1_0.puml'];
+            const arquivos = [
+              svg, 'diagrama_classes_proxy_v1_0.puml',
+              'diagrama_objetos_proxy_votacao.svg',
+              'diagrama_objetos_proxy_votacao.puml'
+            ];
             const fragmento = document.createElement('template');
             fragmento.innerHTML = html;
             const imagem = fragmento.content.querySelector('img[src$="' + svg + '"]');
