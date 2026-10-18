@@ -11,13 +11,21 @@ class Conteudo(ABC):
         self.corpo = corpo
         self.data_criacao = datetime.now()
 
+    def como_pergunta(self) -> "Pergunta | None":
+        # Polimorfismo no lugar de isinstance (RNF01): só a Pergunta devolve a si mesma
+        return None
+
 
 class Pergunta(Conteudo):
-    def __init__(self, corpo: str, titulo: str):
+    def __init__(self, corpo: str, titulo: str, tags: list[str] | None = None):
         super().__init__(corpo)
         self.titulo = titulo
+        self.tags: list[str] = list(tags or [])
         self.status = "ABERTA"
         self.respostas: list["Resposta"] = []
+
+    def como_pergunta(self) -> "Pergunta":
+        return self
 
     def adicionar_resposta(self, resposta: "Resposta") -> None:
         # Composição (diagrama v2): a Resposta pertence a uma única Pergunta
