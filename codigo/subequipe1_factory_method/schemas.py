@@ -7,10 +7,12 @@ from pydantic import BaseModel, ConfigDict, Field
 class PerguntaIn(BaseModel):
     titulo: str = Field(min_length=1)
     corpo: str = Field(min_length=1)
+    autor: str = Field(min_length=1)
 
 
 class RespostaIn(BaseModel):
     corpo: str = Field(min_length=1)
+    autor: str = Field(min_length=1)
 
 
 class RespostaOut(BaseModel):
@@ -19,6 +21,7 @@ class RespostaOut(BaseModel):
     id: UUID
     pergunta_id: UUID
     corpo: str
+    autor: str
     aceita: bool
     data_criacao: datetime
 
@@ -29,6 +32,7 @@ class PerguntaOut(BaseModel):
     id: UUID
     titulo: str
     corpo: str
+    autor: str
     status: str
     data_criacao: datetime
     respostas: list[RespostaOut] = []

@@ -4,12 +4,14 @@ from .produtos import Conteudo, Pergunta, Resposta
 from .repositorio import RepositorioConteudo
 
 
+# Creator abstrato (GoF)
 class CriadorDeConteudo(ABC):
     """Creator abstrato: declara a fábrica, mas não decide a classe concreta."""
 
     def __init__(self, repositorio: RepositorioConteudo):
         self.repositorio = repositorio
 
+    # Factory Method (GoF): cada subclasse decide qual Conteudo instanciar
     @abstractmethod
     def criar_conteudo(self, dados: dict) -> Conteudo:
         ...
@@ -21,14 +23,20 @@ class CriadorDeConteudo(ABC):
         return conteudo
 
 
+# Concrete Creator (GoF): implementa o Factory Method para produzir Perguntas
 class CriadorDePergunta(CriadorDeConteudo):
     def criar_conteudo(self, dados: dict) -> Conteudo:
-        return Pergunta(corpo=dados["corpo"], titulo=dados["titulo"])
+        return Pergunta(corpo=dados["corpo"], titulo=dados["titulo"], autor=dados["autor"])
 
 
+# Concrete Creator (GoF): implementa o Factory Method para produzir Respostas
 class CriadorDeResposta(CriadorDeConteudo):
     def criar_conteudo(self, dados: dict) -> Conteudo:
         pergunta: Pergunta = dados["pergunta"]
-        resposta = Resposta(corpo=dados["corpo"], pergunta_id=pergunta.id)
+        resposta = Resposta(
+            corpo=dados["corpo"],
+            autor=dados["autor"],
+            pergunta_id=pergunta.id,
+        )
         pergunta.adicionar_resposta(resposta)
         return resposta
