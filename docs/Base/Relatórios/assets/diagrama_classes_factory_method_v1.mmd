@@ -1,0 +1,59 @@
+classDiagram
+    direction TB
+
+    class PerguntaController {
+        -criador: CriadorDeConteudo
+        +publicarPerguntas(dados) Pergunta
+        -validarDados()
+    }
+    class RespostaController {
+        -criador: CriadorDeConteudo
+        +publicarResposta(perguntaId, dados) Resposta
+        +marcarComoAceita()
+        -validarAutoria()
+    }
+
+    class CriadorDeConteudo {
+        <<abstract>>
+        +publicar(dados) Conteudo
+        +criar_conteudo(dados) Conteudo*
+    }
+    class CriadorDePergunta {
+        +criar_conteudo(dados) Conteudo
+    }
+    class CriadorDeResposta {
+        +criar_conteudo(dados) Conteudo
+    }
+
+    class Conteudo {
+        <<abstract>>
+        -id: UUID
+        -corpo: str
+        -dataCriacao: DateTime
+        +editar()
+    }
+    class Pergunta {
+        -titulo: str
+        -status: str
+        +fechar()
+        +reabrir()
+        +atualizarStatus()
+        +associarTags()
+    }
+    class Resposta {
+        -aceita: bool
+        +aceitar()
+    }
+
+    CriadorDeConteudo <|-- CriadorDePergunta
+    CriadorDeConteudo <|-- CriadorDeResposta
+    Conteudo <|-- Pergunta
+    Conteudo <|-- Resposta
+    Pergunta "1" o-- "*" Resposta
+
+    CriadorDeConteudo ..> Conteudo : usa
+    CriadorDePergunta ..> Pergunta : cria
+    CriadorDeResposta ..> Resposta : cria
+
+    PerguntaController --> CriadorDeConteudo : pede o objeto
+    RespostaController --> CriadorDeConteudo : pede o objeto

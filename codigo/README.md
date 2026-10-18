@@ -56,3 +56,11 @@ Os controllers recebem o criador via `Depends()` tipado como o abstrato `Criador
    ```bash
    pytest -v
    ```
+
+## Ads — SubEquipe 03 (Strategy)
+
+Os contratos de Ads ficam em `subequipe3_strategy/ads/`; a estratégia de match exato é desenvolvida na issue #25 sobre essa base. A implementação preserva UUIDs do módulo Conteúdo e não altera os endpoints Factory Method existentes.
+
+Consulte [contratos, integração e limitações de Ads](subequipe3_strategy/ads/README.md). Os testes ficam em `tests/` e podem ser executados, a partir de `codigo/`, com `python -m pytest -q`. As dependências de desenvolvimento estão em `requirements-dev.txt`.
+
+O Context, o registro de políticas e as rotas SSR estão em [ENTREGA.md](subequipe3_strategy/ads/ENTREGA.md) (#27). Eles são acrescentados à mesma aplicação FastAPI do fórum por `subequipe3_strategy/main.py`; para incluir as rotas de Ads, execute `uvicorn subequipe3_strategy.main:app --reload` a partir de `codigo/`. A estratégia genérica (#26) e a política de maior saldo (#28) continuam nas issues dos respectivos responsáveis.
