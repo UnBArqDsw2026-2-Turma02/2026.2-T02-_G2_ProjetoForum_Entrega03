@@ -1,12 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>G2 - Fórum</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="Description">
+  <meta name="description" content="Documentação do G2_ProjetoForum, Entrega 03 (Padrões de Projeto) - Arquitetura e Desenho de Software, UnB">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    /* Seta indicando itens do menu lateral com subitens recolhíveis */
+    .sidebar-nav li.folder {
+      position: relative;
+    }
+    .sidebar-nav li.folder::after {
+      content: '▸';
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 12px;
+      color: #9a9a9a;
+      transition: transform 0.2s ease, color 0.2s ease;
+      pointer-events: none;
+    }
+    .sidebar-nav li.folder.open::after {
+      color: #42b983;
+      transform: rotate(90deg);
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
@@ -17,7 +37,18 @@
       repo: 'https://github.com/UnBArqDsw2025-1-Turma01/RepositorioTemplateEntrega1'
     }
   </script>
+  <script>
+    // Identificação do site, aplicada sobre a configuração acima.
+    window.$docsify.name = 'G2 - Fórum';
+    window.$docsify.repo = 'https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03';
+  </script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <!-- Destaque de sintaxe Python nos códigos embutidos -->
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+  <!-- Menu lateral retrátil -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+  <!-- Zoom nas imagens dos diagramas -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
 </body>
 </html>
