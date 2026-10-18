@@ -15,6 +15,8 @@ codigo/
 │   ├── schemas.py         # Schemas Pydantic de entrada e saída
 │   └── main.py            # API FastAPI e endpoints (Client)
 ├── tests/                 # Testes com pytest + TestClient
+├── validacao_subequipe1/
+│   └── painel_streamlit.py  # Painel para validar a API pelo navegador
 ├── pytest.ini
 ├── requirements.txt       # Dependências do projeto (FastAPI, pytest)
 └── README.md
@@ -59,6 +61,13 @@ O `Comentario` (F4, issue #9) mostra o princípio aberto/fechado: entrou com uma
    ```bash
    pytest -v
    ```
+
+6. **Validar pelo navegador (opcional):** com a API rodando no passo 3, em outro terminal:
+   ```bash
+   pip install -r requirements-dev.txt
+   streamlit run validacao_subequipe1/painel_streamlit.py
+   ```
+   O painel fala com a API só por HTTP: publica pergunta, resposta e comentário, mostra qual Concrete Creator atende cada rota e roda os cenários que a arquitetura pede (201, 404 e 422 nas bordas).
 
 ## Ads — SubEquipe 03 (Strategy)
 
