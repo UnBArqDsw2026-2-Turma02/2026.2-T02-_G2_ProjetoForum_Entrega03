@@ -14,3 +14,9 @@
       - [Código: Strategy](/Base/Codigos/1.1.3.Codigo_SubEquipe_03.md)
   - [1.2. Participações](/Base/1.2.ParticipacoesPadroesDeProjeto.md)
   - [1.3. Iniciativas Extras](/Base/1.3.IniciativasExtras.md)
+    - Atas de Reunião
+      - [Rastreabilidade das Reuniões](/Base/iniciativas_extras/atas_reuniao/rastreabilidade.md)
+      - SubEquipe_03
+        - [Ata 01 - Onboarding](/Base/iniciativas_extras/atas_reuniao/subequipe_03/ata-01-onboarding.md)
+        - [Ata 02 - Revisão dos diagramas](/Base/iniciativas_extras/atas_reuniao/subequipe_03/ata-02-revisao-diagramas.md)
+      - [Modelo de Ata](/Base/iniciativas_extras/atas_reuniao/modelo-ata.md)
