@@ -1,4 +1,4 @@
-﻿"""Issue #28 â€” EstratÃ©giaMaiorSaldoNaTag: polÃ­tica contextual por maior saldo."""
+"""Issue #28 â€” EstratÃ©giaMaiorSaldoNaTag: polÃ­tica contextual por maior saldo."""
 
 from .anuncio import Anuncio, AnuncioContextual
 from .campanha import Campanha

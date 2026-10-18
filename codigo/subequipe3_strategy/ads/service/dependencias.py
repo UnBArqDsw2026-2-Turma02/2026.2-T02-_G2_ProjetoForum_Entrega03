@@ -1,4 +1,4 @@
-﻿"""Providers do FastAPI: montam o Context de Ads a cada requisiÃ§Ã£o via Depends()."""
+"""Providers do FastAPI: montam o Context de Ads a cada requisiÃ§Ã£o via Depends()."""
 
 import os
 from dataclasses import dataclass

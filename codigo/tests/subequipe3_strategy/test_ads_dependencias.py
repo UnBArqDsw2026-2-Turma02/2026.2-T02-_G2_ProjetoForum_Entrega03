@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 from fastapi import HTTPException
 
 from subequipe3_strategy.ads.service import dependencias
