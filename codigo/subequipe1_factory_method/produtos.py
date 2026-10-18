@@ -13,9 +13,10 @@ class Conteudo(ABC):
 
 
 class Pergunta(Conteudo):
-    def __init__(self, corpo: str, titulo: str):
+    def __init__(self, corpo: str, titulo: str, tags: list[str] | None = None):
         super().__init__(corpo)
         self.titulo = titulo
+        self.tags: list[str] = list(tags or [])
         self.status = "ABERTA"
         self.respostas: list["Resposta"] = []
 
