@@ -102,10 +102,15 @@ def test_identificador_invalido_responde_422(cliente_ads):
     assert cliente_ads.get("/perguntas/nao-e-uuid/pagina").status_code == 422
 
 
-def test_sem_fallback_integrado_responde_503(configurar_app):
-    resposta = configurar_app(com_fallback=False).get(f"/perguntas/{PERGUNTA_COM_MATCH}/pagina")
-    assert resposta.status_code == 503
-    assert "#26" in resposta.json()["detail"]
+def test_sem_fallback_funciona_quando_ha_match(configurar_app): # Antigo test_sem_fallback_integrado_responde_503
+    cliente = configurar_app(com_fallback=False)
+
+    resposta = cliente.get(
+        f"/perguntas/{PERGUNTA_COM_MATCH}/pagina"
+    )
+
+    assert resposta.status_code == 200
+    assert "Curso de Python" in resposta.text
 
 
 def test_politica_nao_registrada_responde_503(configurar_app):

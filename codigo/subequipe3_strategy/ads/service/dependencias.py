@@ -12,6 +12,7 @@ from ..model.repositorio import RepositorioAds
 from ..model.strategies import EstrategiaSelecaoAnuncio
 from ..view.pergunta_view import PerguntaView
 from .seletor import PoliticaDesconhecida, SeletorDeEstrategia
+from ..model.generico import EstrategiaAnuncioGenerico
 
 VARIAVEL_POLITICA = "ADS_POLITICA"
 POLITICA_PADRAO = "match_exato"
@@ -41,9 +42,8 @@ def get_seletor() -> SeletorDeEstrategia:
 
 def get_estrategia_fallback() -> EstrategiaSelecaoAnuncio:
     # A estratégia genérica pertence à Issue #26; o Context não a substitui.
-    raise HTTPException(
-        status_code=503,
-        detail="Estratégia genérica de fallback (Issue #26) ainda não integrada.",
+    return EstrategiaAnuncioGenerico(
+        get_repositorio_ads().anuncio_padrao
     )
 
 
