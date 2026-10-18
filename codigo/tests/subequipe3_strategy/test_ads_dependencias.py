@@ -38,7 +38,8 @@ def test_repositorio_compartilhado_entre_requisicoes():
 
 
 def test_seletor_registra_as_politicas_disponiveis():
-    assert get_seletor().politicas() == ("match_exato",)
+    assert get_seletor().politicas() == ("maior_saldo", "match_exato")
+    assert get_seletor().escolher("maior_saldo").obter_nome() == "maior_saldo"
 
 
 def test_fallback_pendente_da_issue_26_responde_503():

@@ -7,6 +7,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 
 from ..controller.controlador_entrega import ControladorEntrega
+from ..model.maior_saldo_strategy import EstrategiaMaiorSaldoNaTag
 from ..model.match_exato import EstrategiaMatchExatoDeTag
 from ..model.repositorio import RepositorioAds
 from ..model.strategies import EstrategiaSelecaoAnuncio
@@ -35,8 +36,10 @@ def get_repositorio_ads() -> RepositorioAds:
 
 
 def get_seletor() -> SeletorDeEstrategia:
-    # Novas políticas (ex.: maior_saldo, Issue #28) entram apenas por registro aqui.
-    return SeletorDeEstrategia([EstrategiaMatchExatoDeTag()])
+    # Novas políticas entram apenas por registro aqui (OCP / Issue #28).
+    return SeletorDeEstrategia(
+        [EstrategiaMatchExatoDeTag(), EstrategiaMaiorSaldoNaTag()]
+    )
 
 
 def get_estrategia_fallback() -> EstrategiaSelecaoAnuncio:
