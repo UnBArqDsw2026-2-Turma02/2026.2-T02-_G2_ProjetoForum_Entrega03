@@ -11,7 +11,7 @@ PERGUNTA = {
 }
 
 
-def test_publicar_pergunta_retorna_201_com_id(client, repositorios):
+def test_publicar_pergunta_retorna_201_com_id(client, repositorio):
     resposta = client.post("/perguntas", json=PERGUNTA)
 
     assert resposta.status_code == 201
@@ -19,7 +19,7 @@ def test_publicar_pergunta_retorna_201_com_id(client, repositorios):
     assert corpo["titulo"] == PERGUNTA["titulo"]
     assert corpo["tags"] == PERGUNTA["tags"]
     assert corpo["respostas"] == []
-    assert isinstance(repositorios.perguntas.buscar(UUID(corpo["id"])), Pergunta)
+    assert isinstance(repositorio.buscar_por_id(UUID(corpo["id"])), Pergunta)
 
 
 def test_publicar_pergunta_sem_tags_retorna_lista_vazia(client):
@@ -59,3 +59,9 @@ def test_buscar_pergunta_inexistente_retorna_404(client):
 
     assert resposta.status_code == 404
     assert resposta.json() == {"detail": "Pergunta não encontrada"}
+
+
+def test_buscar_pergunta_com_id_de_resposta_retorna_404(client, pergunta_id):
+    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": "Use subclasses."}).json()
+
+    assert client.get(f"/perguntas/{criada['id']}").status_code == 404
