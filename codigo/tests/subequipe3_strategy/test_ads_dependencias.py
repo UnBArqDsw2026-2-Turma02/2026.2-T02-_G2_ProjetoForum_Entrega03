@@ -1,6 +1,8 @@
 import pytest
 from fastapi import HTTPException
 
+from subequipe3_strategy.ads.model.repositorio import RepositorioAds
+
 from subequipe3_strategy.ads.service import dependencias
 from subequipe3_strategy.ads.service.dependencias import (
     ConfiguracaoAds,
@@ -46,7 +48,8 @@ def test_fallback_integrado_retorna_estrategia_generica(): # Issue 26
         EstrategiaAnuncioGenerico,
     )
 
-    estrategia = get_estrategia_fallback()
+    repositorio = RepositorioAds.seed()
+    estrategia = get_estrategia_fallback(repositorio)
 
     assert isinstance(estrategia, EstrategiaAnuncioGenerico)
     assert estrategia.obter_nome() == "generico"

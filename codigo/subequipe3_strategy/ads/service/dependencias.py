@@ -40,11 +40,13 @@ def get_seletor() -> SeletorDeEstrategia:
     return SeletorDeEstrategia([EstrategiaMatchExatoDeTag()])
 
 
-def get_estrategia_fallback() -> EstrategiaSelecaoAnuncio:
-    # A estratégia genérica pertence à Issue #26; o Context não a substitui.
-    return EstrategiaAnuncioGenerico(
-        get_repositorio_ads().anuncio_padrao
-    )
+def get_estrategia_fallback(
+    repositorio: Annotated[
+        RepositorioAds,
+        Depends(get_repositorio_ads),
+    ],
+) -> EstrategiaSelecaoAnuncio:
+    return EstrategiaAnuncioGenerico(repositorio.anuncio_padrao)
 
 
 def get_delivery_service(
