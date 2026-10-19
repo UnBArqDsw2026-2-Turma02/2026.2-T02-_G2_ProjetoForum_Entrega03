@@ -1,0 +1,207 @@
+@startuml
+title Diagrama de Objetos — Proxy de proteção na votação positiva
+left to right direction
+skinparam shadowing false
+skinparam object {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+}
+skinparam note {
+  BackgroundColor #FFF7D6
+  BorderColor #B45309
+}
+skinparam ArrowColor #475569
+skinparam defaultTextAlignment left
+
+' Cada package é um cenário independente; nenhum estado é compartilhado entre cenários.
+package "C01 — Voto permitido (estado antes → depois)" {
+  object "cliente:ClienteVotacaoFastAPI" as c1_cliente {
+    servico = proxy
+  }
+  object "proxy:ProxyProtecaoVotacao" as c1_proxy {
+    reputacao_minima = 15
+    real = servicoReal
+    cota = cotaDiaria
+  }
+  object "servicoReal:ServicoVotacaoReal" as c1_real {
+    cota = cotaDiaria
+    votos = {} → {voto1}
+    eventos = {} → {evento1}
+  }
+  object "cotaDiaria:CotaDiariaEmMemoria" as c1_cota {
+    limite = 3
+    uso(V1, 16/10/2026 UTC) = 0 → 1
+  }
+  object "autorA1:Usuario" as c1_a1 {
+    id = "A1"
+    reputacao = 100 → 110
+  }
+  object "votanteV1:Usuario" as c1_v1 {
+    id = "V1"
+    reputacao = 20 → 20
+  }
+  object "alvoP101:ConteudoVotavel" as c1_p101 {
+    id = "P101"
+    tipo = pergunta
+    autor = autorA1
+    placar = 0 → 1
+  }
+  object "voto1:Voto" as c1_voto {
+    votante = V1
+    alvo = P101
+  }
+  object "evento1:EventoReputacao" as c1_evento {
+    voto = voto1
+    beneficiario = A1
+    variacao = +10
+  }
+  object "solicitacao:SolicitacaoVotoPositivo" as c1_sol {
+    votante = V1
+    alvo = P101
+    dia = 16/10/2026 UTC
+  }
+  object "resultado:ResultadoVotacao" as c1_res {
+    codigo = REGISTRADO
+    voto = voto1
+    evento = evento1
+  }
+  c1_cliente --> c1_proxy : servico
+  c1_proxy --> c1_real : real
+  c1_proxy --> c1_cota : cota
+  c1_real --> c1_cota : mesma instância
+  c1_sol --> c1_v1 : votante
+  c1_sol --> c1_p101 : alvo
+  c1_p101 --> c1_a1 : autor
+  c1_voto --> c1_v1 : votante
+  c1_voto --> c1_p101 : alvo
+  c1_evento --> c1_voto : voto
+  c1_evento --> c1_a1 : beneficiário
+  c1_res --> c1_voto : voto
+  c1_res --> c1_evento : evento
+  note bottom of c1_res
+    Delegação: 1 vez
+    Resultado: sucesso
+    Um voto e um evento novos.
+  end note
+}
+
+package "C02 — Reputação insuficiente (rejeição)" {
+  object "cliente:ClienteVotacaoFastAPI" as c2_cliente {
+    servico = proxy
+  }
+  object "proxy:ProxyProtecaoVotacao" as c2_proxy {
+    reputacao_minima = 15
+    real = servicoReal
+    cota = cotaDiaria
+  }
+  object "servicoReal:ServicoVotacaoReal" as c2_real {
+    cota = cotaDiaria
+    votos = {}
+    eventos = {}
+  }
+  object "cotaDiaria:CotaDiariaEmMemoria" as c2_cota {
+    limite = 3
+    uso(V2, 16/10/2026 UTC) = 0/3 → 0/3
+  }
+  object "autorA1:Usuario" as c2_a1 {
+    id = "A1"
+    reputacao = 100 → 100
+  }
+  object "votanteV2:Usuario" as c2_v2 {
+    id = "V2"
+    reputacao = 14 → 14
+  }
+  object "alvoP101:ConteudoVotavel" as c2_p101 {
+    id = "P101"
+    tipo = pergunta
+    autor = autorA1
+    placar = 0 → 0
+  }
+  object "solicitacao:SolicitacaoVotoPositivo" as c2_sol {
+    votante = V2
+    alvo = P101
+    dia = 16/10/2026 UTC
+  }
+  object "resultado:ResultadoVotacao" as c2_res {
+    codigo = REPUTACAO_INSUFICIENTE
+    voto = None
+    evento = None
+  }
+  c2_cliente --> c2_proxy : servico
+  c2_proxy --> c2_real : real (não invocado)
+  c2_proxy --> c2_cota : cota
+  c2_real --> c2_cota : mesma instância
+  c2_sol --> c2_v2 : votante
+  c2_sol --> c2_p101 : alvo
+  c2_p101 --> c2_a1 : autor
+  c2_res ..> c2_proxy : rejeição antes da delegação
+  note bottom of c2_res
+    Sem delegação.
+    Zero novos votos/eventos.
+    Todos os estados são preservados.
+  end note
+}
+
+package "C03 — Cota esgotada (rejeição)" {
+  object "cliente:ClienteVotacaoFastAPI" as c3_cliente {
+    servico = proxy
+  }
+  object "proxy:ProxyProtecaoVotacao" as c3_proxy {
+    reputacao_minima = 15
+    real = servicoReal
+    cota = cotaDiaria
+  }
+  object "servicoReal:ServicoVotacaoReal" as c3_real {
+    cota = cotaDiaria
+    votos = {}
+    eventos = {}
+  }
+  object "cotaDiaria:CotaDiariaEmMemoria" as c3_cota {
+    limite = 3
+    uso(V1, 16/10/2026 UTC) = 3/3 → 3/3
+    origem = configuração prévia
+  }
+  object "autorA1:Usuario" as c3_a1 {
+    id = "A1"
+    reputacao = 100 → 100
+  }
+  object "votanteV1:Usuario" as c3_v1 {
+    id = "V1"
+    reputacao = 20 → 20
+  }
+  object "alvoP101:ConteudoVotavel" as c3_p101 {
+    id = "P101"
+    tipo = pergunta
+    autor = autorA1
+    placar = 0 → 0
+  }
+  object "solicitacao:SolicitacaoVotoPositivo" as c3_sol {
+    votante = V1
+    alvo = P101
+    dia = 16/10/2026 UTC
+  }
+  object "resultado:ResultadoVotacao" as c3_res {
+    codigo = COTA_ESGOTADA
+    voto = None
+    evento = None
+  }
+  c3_cliente --> c3_proxy : servico
+  c3_proxy --> c3_real : real (não invocado)
+  c3_proxy --> c3_cota : cota
+  c3_real --> c3_cota : mesma instância
+  c3_sol --> c3_v1 : votante
+  c3_sol --> c3_p101 : alvo
+  c3_p101 --> c3_a1 : autor
+  c3_res ..> c3_proxy : rejeição após consulta à cota
+  note bottom of c3_cota
+    3/3 é estado inicial configurado.
+    Não representa votos anteriores em P101.
+  end note
+  note bottom of c3_res
+    Sem delegação.
+    Zero novos votos/eventos.
+    Todos os estados são preservados.
+  end note
+}
+@enduml

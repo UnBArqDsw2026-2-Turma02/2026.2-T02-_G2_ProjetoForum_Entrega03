@@ -34,7 +34,38 @@
     window.$docsify = {
       loadSidebar: true,
       name: 'Repositorio Template',
-      repo: 'https://github.com/UnBArqDsw2025-1-Turma01/RepositorioTemplateEntrega1'
+      repo: 'https://github.com/UnBArqDsw2025-1-Turma01/RepositorioTemplateEntrega1',
+      plugins: [
+        function (hook) {
+          hook.afterEach(function (html) {
+            // Abrir os assets da SubEquipe 02 como arquivos, preservando os links relativos no Markdown.
+            const svg = 'diagrama_classes_proxy_v1_0.svg';
+            const arquivos = [
+              svg, 'diagrama_classes_proxy_v1_0.puml',
+              'diagrama_objetos_proxy_votacao.svg',
+              'diagrama_objetos_proxy_votacao.puml',
+              'diagrama_sequencia_proxy_v1_0.svg',
+              'diagrama_sequencia_proxy_v1_0.puml'
+            ];
+            const fragmento = document.createElement('template');
+            fragmento.innerHTML = html;
+            const imagem = fragmento.content.querySelector('img[src$="' + svg + '"]');
+            if (!imagem) return html;
+            const pasta = imagem.getAttribute('src').slice(0, -svg.length);
+            fragmento.content.querySelectorAll('a[href]').forEach(function (link) {
+              const nome = arquivos.find(function (arquivo) {
+                return link.getAttribute('href').endsWith('/' + arquivo);
+              });
+              if (nome) {
+                link.setAttribute('href', pasta + nome);
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener');
+              }
+            });
+            return fragmento.innerHTML;
+          });
+        }
+      ]
     }
   </script>
   <script>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Votação positiva · Proxy de proteção</title>
+<style>
+  :root { color-scheme: light; font-family: system-ui, sans-serif; color: #172b4d; background: #f4f7fb; }
+  body { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+  h1 { font-size: 2rem; margin: 8px 0; } h2 { font-size: 1.1rem; margin-top: 0; }
+  p { line-height: 1.55; } a { color: #1358a8; } .muted { color: #52647e; }
+  .card { background: white; border: 1px solid #d6e0ec; border-radius: 12px; padding: 22px; margin: 20px 0; }
+  .controls { display: flex; flex-wrap: wrap; align-items: end; gap: 14px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
+  select, button { font: inherit; padding: 10px 14px; border-radius: 7px; border: 1px solid #a4b6ce; }
+  select { background: white; color: #172b4d; } button { cursor: pointer; background: #1358a8; color: white; border-color: #1358a8; }
+  button.secondary { background: white; color: #1358a8; } button:disabled { opacity: .55; cursor: wait; }
+  :focus-visible { outline: 3px solid #c67700; outline-offset: 3px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid .card { min-width: 0; margin-top: 0; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; line-height: 1.5; background: #f4f7fb; padding: 15px; border-radius: 7px; }
+  #feedback { font-weight: 600; border-left: 4px solid #1358a8; padding: 10px 14px; background: #eaf2fc; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } body { padding: 20px 15px; } }
+</style>
+<header>
+  <span class="muted">Grupo 2 · T02 · SubEquipe 02 · Entrega 3</span>
+  <h1>Votação positiva</h1>
+  <p>Proxy de proteção: reputação mínima de <strong>15</strong> pontos e cota didática de <strong>3 votos</strong> por usuário e dia UTC.</p>
+  <p class="muted">Dados simulados em memória. Prepare um cenário, registre o voto e compare os estados. Reinicie antes de repetir.</p>
+  <a href="/docs" target="_blank" rel="noopener">Abrir documentação interativa da API</a>
+</header>
+<main>
+  <section class="card" aria-labelledby="preparacao">
+    <h2 id="preparacao">1. Preparar a demonstração</h2>
+    <form id="preparar" class="controls">
+      <label>Cenário
+        <select id="cenario"><option value="C01">C01 — Voto permitido</option><option value="C02">C02 — Reputação insuficiente</option><option value="C03">C03 — Cota esgotada</option></select>
+      </label>
+      <button>Preparar cenário</button>
+      <button type="button" class="secondary" id="consultar">Consultar estado</button>
+    </form>
+    <p class="muted">Preparar recria os dados iniciais. Consultar apenas lê o estado atual. Dia simulado: 16/10/2026 UTC.</p>
+  </section>
+  <section class="card" aria-labelledby="votacao">
+    <h2 id="votacao">2. Solicitar o voto positivo</h2>
+    <form id="votar" class="controls">
+      <label>Votante simulado<select id="votante"><option value="V1">V1 — reputação 20</option><option value="V2">V2 — reputação 14</option></select></label>
+      <label>Conteúdo<select id="alvo"><option value="P101">P101 — pergunta</option><option value="R101">R101 — resposta</option></select></label>
+      <button>Registrar voto positivo</button>
+    </form>
+    <p id="feedback" role="status" aria-live="polite">Carregando estado…</p>
+    <pre id="resultado" aria-label="Resultado da votação">Nenhuma votação solicitada nesta página.</pre>
+  </section>
+  <section aria-label="Comparação dos estados" class="grid">
+    <div class="card"><h2>Estado antes da tentativa</h2><pre id="antes">Carregando…</pre></div>
+    <div class="card"><h2>Estado atual / depois da tentativa</h2><pre id="depois">Carregando…</pre></div>
+  </section>
+</main>
+<script>
+  const el = id => document.getElementById(id);
+  const mostrar = (id, dados) => { el(id).textContent = JSON.stringify(dados, null, 2); };
+  async function requisitar(url, opcoes = {}) {
+    const resposta = await fetch(url, opcoes);
+    return {status: resposta.status, ok: resposta.ok, dados: await resposta.json()};
+  }
+  async function executar(operacao) {
+    document.querySelectorAll('button').forEach(botao => { botao.disabled = true; });
+    el('feedback').textContent = 'Consultando a aplicação…';
+    try { await operacao(); }
+    catch { el('feedback').textContent = 'Não foi possível acessar a aplicação. Confira se o servidor está em execução e tente novamente.'; }
+    finally { document.querySelectorAll('button').forEach(botao => { botao.disabled = false; }); }
+  }
+  async function consultar() {
+    const resposta = await requisitar('/estado');
+    mostrar('depois', resposta.dados);
+    el('feedback').textContent = `Estado de ${resposta.dados.cenario} consultado (HTTP ${resposta.status}).`;
+    return resposta.dados;
+  }
+  el('preparar').addEventListener('submit', evento => {
+    evento.preventDefault();
+    executar(async () => {
+      const resposta = await requisitar(`/demo/cenarios/${el('cenario').value}`, {method: 'POST'});
+      mostrar('antes', resposta.dados); mostrar('depois', resposta.dados);
+      el('votante').value = resposta.dados.pedido_sugerido.votante_id;
+      el('alvo').value = resposta.dados.pedido_sugerido.alvo_id;
+      el('resultado').textContent = 'Cenário reiniciado. Solicite uma votação.';
+      el('feedback').textContent = `${resposta.dados.cenario} preparado. Registros e efeitos anteriores foram reiniciados.`;
+    });
+  });
+  el('votar').addEventListener('submit', evento => {
+    evento.preventDefault();
+    executar(async () => {
+      mostrar('antes', (await requisitar('/estado')).dados);
+      const resposta = await requisitar('/votos', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({votante_id: el('votante').value, alvo_id: el('alvo').value})
+      });
+      mostrar('resultado', resposta.dados);
+      mostrar('depois', (await requisitar('/estado')).dados);
+      el('feedback').textContent = `HTTP ${resposta.status} · ${resposta.dados.codigo || 'Pedido não executado'} — ${resposta.dados.mensagem || resposta.dados.detail}`;
+    });
+  });
+  el('consultar').addEventListener('click', () => executar(consultar));
+  executar(async () => {
+    const estado = await consultar(); mostrar('antes', estado);
+    el('cenario').value = estado.cenario;
+    el('votante').value = estado.pedido_sugerido.votante_id;
+  });
+</script>
+</html>
