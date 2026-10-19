@@ -33,7 +33,7 @@ def test_protocol_aceita_estrategia_sem_heranca():
 
 
 def test_projecao_preserva_identidade_sem_modificar_conteudo():
-    original = PerguntaConteudo("Corpo", "Título")
+    original = PerguntaConteudo("Corpo", "Título", "Maria")
     tags = [Tag("python")]
     projecao = projetar_pergunta(original, tags)
     assert projecao.id == original.id

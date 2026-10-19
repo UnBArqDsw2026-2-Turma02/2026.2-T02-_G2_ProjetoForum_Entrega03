@@ -19,4 +19,5 @@
       - SubEquipe_03
         - [Ata 01 - Onboarding](/Base/iniciativas_extras/atas_reuniao/subequipe_03/ata-01-onboarding.md)
         - [Ata 02 - Revisão dos diagramas](/Base/iniciativas_extras/atas_reuniao/subequipe_03/ata-02-revisao-diagramas.md)
+        - [Ata 03 - Deadline](/Base/iniciativas_extras/atas_reuniao/subequipe_03/ata-03-deadline.md)
       - [Modelo de Ata](/Base/iniciativas_extras/atas_reuniao/modelo-ata.md)

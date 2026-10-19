@@ -6,10 +6,11 @@ from subequipe1_factory_method.criadores import CriadorDeResposta
 from subequipe1_factory_method.produtos import Pergunta, Resposta
 
 CORPO = "Um padrão em que a subclasse decide qual objeto criar."
+AUTOR = "João"
 
 
 def test_responder_pergunta_existente_retorna_201(client, pergunta_id):
-    resposta = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": CORPO})
+    resposta = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": CORPO, "autor": AUTOR})
 
     assert resposta.status_code == 201
     corpo = resposta.json()
@@ -20,7 +21,7 @@ def test_responder_pergunta_existente_retorna_201(client, pergunta_id):
 
 
 def test_responder_pergunta_inexistente_retorna_404(client, repositorio):
-    resposta = client.post(f"/perguntas/{uuid4()}/respostas", json={"corpo": CORPO})
+    resposta = client.post(f"/perguntas/{uuid4()}/respostas", json={"corpo": CORPO, "autor": AUTOR})
 
     assert resposta.status_code == 404
     assert resposta.json() == {"detail": "Pergunta não encontrada"}
@@ -28,16 +29,16 @@ def test_responder_pergunta_inexistente_retorna_404(client, repositorio):
 
 
 def test_responder_usando_id_de_resposta_retorna_404(client, repositorio, pergunta_id):
-    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": CORPO}).json()
+    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": CORPO, "autor": AUTOR}).json()
 
-    resposta = client.post(f"/perguntas/{criada['id']}/respostas", json={"corpo": CORPO})
+    resposta = client.post(f"/perguntas/{criada['id']}/respostas", json={"corpo": CORPO, "autor": AUTOR})
 
     assert resposta.status_code == 404
     assert len(repositorio._conteudos) == 2
 
 
 def test_resposta_aparece_no_get_da_pergunta(client, pergunta_id):
-    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": CORPO}).json()
+    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": CORPO, "autor": AUTOR}).json()
 
     pergunta = client.get(f"/perguntas/{pergunta_id}")
 
@@ -46,7 +47,7 @@ def test_resposta_aparece_no_get_da_pergunta(client, pergunta_id):
 
 
 def test_resposta_e_salva_no_repositorio_via_publicar(client, repositorio, pergunta_id):
-    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": CORPO}).json()
+    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": CORPO, "autor": AUTOR}).json()
 
     salva = repositorio.buscar_por_id(UUID(criada["id"]))
     assert isinstance(salva, Resposta)
@@ -54,15 +55,15 @@ def test_resposta_e_salva_no_repositorio_via_publicar(client, repositorio, pergu
 
 
 def test_corpo_vazio_retorna_422(client, pergunta_id):
-    resposta = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": ""})
+    resposta = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": "", "autor": AUTOR})
 
     assert resposta.status_code == 422
 
 
 def test_criador_de_resposta_publica_resposta_ligada_a_pergunta(repositorio):
-    pergunta = Pergunta(corpo="corpo", titulo="titulo")
+    pergunta = Pergunta(corpo="corpo", titulo="titulo", autor="Maria")
 
-    resposta = CriadorDeResposta(repositorio).publicar({"corpo": CORPO, "pergunta": pergunta})
+    resposta = CriadorDeResposta(repositorio).publicar({"corpo": CORPO, "autor": AUTOR, "pergunta": pergunta})
 
     assert isinstance(resposta, Resposta)
     assert resposta.aceita is False
