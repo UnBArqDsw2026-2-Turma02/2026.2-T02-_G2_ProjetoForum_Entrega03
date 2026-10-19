@@ -16,6 +16,8 @@
   - [1.3. Iniciativas Extras](/Base/1.3.IniciativasExtras.md)
     - Atas de Reunião
       - [Rastreabilidade das Reuniões](/Base/iniciativas_extras/atas_reuniao/rastreabilidade.md)
+      - SubEquipe_01
+        - [Ata 01 - Revisão final](/Base/iniciativas_extras/atas_reuniao/subequipe_01/ata-01-revisao-final.md)
       - SubEquipe_03
         - [Ata 01 - Onboarding](/Base/iniciativas_extras/atas_reuniao/subequipe_03/ata-01-onboarding.md)
         - [Ata 02 - Revisão dos diagramas](/Base/iniciativas_extras/atas_reuniao/subequipe_03/ata-02-revisao-diagramas.md)

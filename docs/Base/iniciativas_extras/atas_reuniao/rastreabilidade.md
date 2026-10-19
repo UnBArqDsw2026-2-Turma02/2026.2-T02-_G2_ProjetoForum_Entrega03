@@ -16,9 +16,11 @@ gravação incorporada (ver também o
 
 ### SubEquipe_01
 
+Liderança: Caio Soares.
+
 | Nº | Data | Participantes | Pauta | Ata / Comprobatório |
 | :-: | :-: | :-: | :-: | :-: |
-| _A preencher_ | | | | |
+| 1 | A confirmar (registrada em 19/10/2026) | Caio Soares, Maria Laura Regis | Revisão final da entrega: front-end, execução do código e dos testes, demonstração no Swagger e liberação para gravar | [Ata 01](/Base/iniciativas_extras/atas_reuniao/subequipe_01/ata-01-revisao-final.md) |
 
 ### SubEquipe_02
 
