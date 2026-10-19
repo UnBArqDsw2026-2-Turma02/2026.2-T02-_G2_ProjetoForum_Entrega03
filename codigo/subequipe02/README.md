@@ -12,8 +12,10 @@ padrão; não exige instalar dependências para executar seus testes.
 | `dominio.py` | Usuário, conteúdo, voto, evento, solicitação, resultado e códigos de resultado. |
 | `contratos.py` | Interfaces abstratas `ServicoVotacao` (Subject) e `CotaDiaria`. |
 | `proxy.py` | `ProxyProtecaoVotacao`: autorização e delegação pelo contrato comum. |
+| `cota.py` | `CotaDiariaEmMemoria`: implementação em memória de `CotaDiaria`, com consumo por `(usuario_id, dia)` e limite configurável (padrão 3). |
 | `tests/test_proxy.py` | Comportamento isolado do Proxy, com substitutos de serviço e cota. |
 | `tests/test_dominio.py` | Restrições de resultado, beneficiário e tipo de conteúdo previstas na modelagem. |
+| `tests/test_cota.py` | Comportamento isolado da cota: uso ausente, consumos 0/2/3, limite configurável e inválido, consultas sem mutação, incremento e independência por usuário e data. |
 
 ## Executar os testes
 
@@ -45,9 +47,9 @@ usuário/data e conteúdo do tipo resposta. As rejeições preservam os dados do
 domínio e retornam voto/evento ausentes. Os testes também verificam que o Proxy
 não chama `registrar_consumo`.
 
-Os substitutos são criados com `unittest.mock` a partir das interfaces. A cota
-devolve respostas fixas configuradas para cada teste. O serviço devolve um
-resultado de sucesso previamente montado, sem executar efeitos. Portanto, estes
+Nos testes do Proxy, os substitutos são criados com `unittest.mock` a partir das
+interfaces. A cota devolve respostas fixas configuradas para cada teste. O serviço
+devolve um resultado de sucesso previamente montado, sem executar efeitos. Portanto, estes
 testes **não demonstram** criação/armazenamento de registros pelo serviço real,
 placar +1, reputação do autor +10 ou consumo +1 no caminho aceito. Esses efeitos
 serão verificados na integração dos componentes concretos.
@@ -76,8 +78,48 @@ serão verificados na integração dos componentes concretos.
   UTC escolhida pela demonstração. Ela não é o corpo de uma requisição HTTP que
   permita ao solicitante escolher sua reputação.
 
-Este bloco não implementa `ServicoVotacaoReal` (Luis Guilherme),
-`CotaDiariaEmMemoria` (Cauã Nicolas) nem a entrada FastAPI. A execução pressupõe
-entidades existentes, votante distinto do autor e ausência de voto anterior no
-alvo. Concorrência, falhas durante o registro, persistência e autenticação reais
+## Cota diária em memória
+
+O arquivo `cota.py` implementa `CotaDiariaEmMemoria`, classe concreta de `CotaDiaria` responsável por controlar a quantidade de votos positivos consumidos por usuário e por data.
+
+A implementação utiliza um dicionário em memória, indexado pela combinação `(usuario_id, dia)`. O limite é configurável, com valor padrão de 3 consumos por dia.
+
+- `consultar_uso(usuario_id, dia)`: retorna a quantidade de consumos registrados para a chave informada. Quando não existe registro, retorna 0 sem modificar o estado.
+- `disponivel(usuario_id, dia)`: retorna `True` quando o consumo é menor que o limite configurado e `False` quando o limite foi atingido. A consulta não altera os registros.
+- `registrar_consumo(usuario_id, dia)`: incrementa em uma unidade o consumo da chave informada. Esse método pressupõe que a autorização já foi realizada e não cria votos ou eventos nem modifica placares ou reputações.
+
+Os consumos são independentes por usuário e data. Como o armazenamento é exclusivamente em memória, os registros não são persistidos entre processos.
+
+### Testes da cota diária
+
+O arquivo `tests/test_cota.py` verifica o uso inicial igual a zero, os consumos 0/2/3, a configuração de limites diferentes de 3, a rejeição de limites inválidos, a ausência de mutação nas consultas, o incremento de uma unidade e o isolamento entre usuários e datas.
+
+O cenário C03 pode ser preparado configurando diretamente três consumos para o usuário e a data do teste. Dessa forma, a cota fica esgotada sem exigir votos anteriores no conteúdo P101.
+
+Em uma sessão Python iniciada na pasta `codigo`:
+
+```python
+from datetime import date
+from subequipe02.cota import CotaDiariaEmMemoria
+
+cota = CotaDiariaEmMemoria()
+for _ in range(3):
+    cota.registrar_consumo("V1", date(2026, 10, 16))
+```
+
+Execute a suíte do projeto a partir da raiz do repositório:
+
+```powershell
+python -m unittest discover -s codigo/subequipe02/tests -t codigo -v
+```
+
+A implementação da cota não altera o Proxy: o Proxy verifica a autorização, enquanto o serviço real é responsável por registrar o consumo após aceitar a votação.
+
+---
+
+
+O serviço `ServicoVotacaoReal` (Luis Guilherme) e a entrada FastAPI ainda serão
+implementados. A execução pressupõe entidades existentes, votante distinto do
+autor e ausência de voto anterior no alvo. Concorrência, falhas durante o registro,
+persistência e autenticação reais
 não integram os cenários iniciais.
