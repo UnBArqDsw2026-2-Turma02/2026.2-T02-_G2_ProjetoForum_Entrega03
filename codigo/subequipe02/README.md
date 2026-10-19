@@ -1,6 +1,12 @@
 # Votação positiva padrão — Proxy de proteção com FastAPI
 
-Implementação da base compartilhada e do Proxy da [Issue #35](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/issues/35), conforme o [Diagrama de Classes e os contratos](../../docs/Base/Relatórios/1.1.2.SubEquipe_02.md#contratos-de-entrada-resultado-e-cota).
+Implementação integrada da SubEquipe 02 em Python/FastAPI, conforme o
+[Diagrama de Classes e os contratos](../../docs/Base/Relatórios/1.1.2.SubEquipe_02.md#contratos-de-entrada-resultado-e-cota).
+Reúne a base e o Proxy ([#35](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/issues/35)),
+a cota diária ([#49](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/issues/49)),
+o serviço real ([#55](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/issues/55))
+e a aplicação com os cenários de demonstração ([#56](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/issues/56)),
+incorporados à main pelo [PR #63](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/pull/63).
 
 O núcleo de domínio utiliza somente a biblioteca padrão e admite Python 3.10+.
 A aplicação e a suíte completa requerem **Python 3.11 ou superior**, conforme as
@@ -179,7 +185,7 @@ dia = date(2026, 10, 16)
 solicitacao = SolicitacaoVotoPositivo(votante, alvo, dia)
 
 # Chamada isolada para inspecionar efeitos de uma solicitação já autorizada.
-# A aplicação receberá os pedidos pelo Proxy na composição dos componentes.
+# Na aplicação integrada, os pedidos passam pelo Proxy antes do serviço real.
 resultado = real.votar(solicitacao)
 print(resultado.codigo.value)               # REGISTRADO
 print(alvo.placar, autor.reputacao)           # 1 110

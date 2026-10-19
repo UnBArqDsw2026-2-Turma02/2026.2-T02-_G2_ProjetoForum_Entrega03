@@ -69,6 +69,25 @@ O `Comentario` (F4, issue #9) mostra o princípio aberto/fechado: entrou com uma
    ```
    O painel fala com a API só por HTTP: publica pergunta, resposta e comentário, mostra qual Concrete Creator atende cada rota e roda os cenários que a arquitetura pede (201, 404 e 422 nas bordas).
 
+## Votação positiva — SubEquipe 02 (Proxy de proteção)
+
+A implementação do Proxy está em `subequipe02/`, com aplicação FastAPI,
+cenários independentes e tela de demonstração. Seu ambiente requer **Python 3.11
+ou superior** e as dependências de `subequipe02/requirements.txt`.
+
+Consulte o [README da SubEquipe 02](subequipe02/README.md) para preparar o
+ambiente, demonstrar C01–C03 e executar os 41 testes com `unittest`.
+Com esse ambiente já preparado, a partir da raiz do repositório, no Git Bash
+do Windows:
+
+```bash
+codigo/subequipe02/.venv/Scripts/python.exe -m uvicorn subequipe02.app:app --app-dir codigo --host 127.0.0.1 --port 8000
+```
+
+Acesse a [demonstração](http://127.0.0.1:8000/) ou a
+[documentação da API](http://127.0.0.1:8000/docs). Execute uma aplicação por vez
+na porta 8000.
+
 ## Ads — SubEquipe 03 (Strategy)
 
 Os contratos de Ads ficam em `subequipe3_strategy/ads/`; a estratégia de match exato é desenvolvida na issue #25 sobre essa base. A implementação preserva UUIDs do módulo Conteúdo e não altera os endpoints Factory Method existentes.

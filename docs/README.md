@@ -54,10 +54,10 @@ O código de cada subequipe pode ser consultado no próprio site, na página
 <b>Fonte:</b> Elaborado pela SubEquipe_01.</p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/subequipe-02/docs/Base/Relat%C3%B3rios/assets/diagrama_classes_proxy_v1_0.svg" alt="Diagrama de classes do Proxy de proteção da votação positiva" width="700">
+  <img src="https://raw.githubusercontent.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/main/docs/Base/Relat%C3%B3rios/assets/diagrama_classes_proxy_v1_0.svg" alt="Diagrama de classes do Proxy de proteção da votação positiva" width="700">
 </p>
-<p align="center"><b>Figura 2</b> — Proxy de proteção da votação positiva (SubEquipe_02, versão 1.0 em revisão na branch <code>subequipe-02</code>).<br>
-<b>Fonte:</b> Elaborado pela SubEquipe_02.</p>
+<p align="center"><b>Figura 2</b> — Proxy de proteção da votação positiva (SubEquipe_02, versão 1.0, incorporada à main).<br>
+<b>Autor:</b> Leonardo de Aquino. | <b>Arquivo-fonte:</b> <a href="https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/blob/main/docs/Base/Relat%C3%B3rios/assets/diagrama_classes_proxy_v1_0.puml">PlantUML</a>.</p>
 
 ## Há algo a ser executado?
 
@@ -67,6 +67,12 @@ O código de cada subequipe pode ser consultado no próprio site, na página
 
 O código fica na pasta [`codigo/`](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/tree/main/codigo)
 do repositório, com uma pasta por subequipe. Requer Python 3.10 ou superior.
+
+**Para a SubEquipe_02**, a aplicação e a suíte completa requerem **Python 3.11
+ou superior**, com ambiente e dependências próprios. Consulte a
+[página Código: Proxy de proteção](/Base/Codigos/1.1.2.Codigo_SubEquipe_02.md)
+para iniciar a demonstração e executar seus testes. Os comandos abaixo iniciam
+a API Factory Method da SubEquipe_01; eles não iniciam a demonstração do Proxy.
 
 1. **Criar e ativar o ambiente virtual**, a partir da pasta `codigo/`:
    ```shell
