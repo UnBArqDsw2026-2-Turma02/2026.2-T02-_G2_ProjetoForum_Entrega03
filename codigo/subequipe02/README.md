@@ -12,10 +12,12 @@ padrão; não exige instalar dependências para executar seus testes.
 | `dominio.py` | Usuário, conteúdo, voto, evento, solicitação, resultado e códigos de resultado. |
 | `contratos.py` | Interfaces abstratas `ServicoVotacao` (Subject) e `CotaDiaria`. |
 | `proxy.py` | `ProxyProtecaoVotacao`: autorização e delegação pelo contrato comum. |
+| `servico_real.py` | `ServicoVotacaoReal`: registros e efeitos da votação já autorizada. |
 | `cota.py` | `CotaDiariaEmMemoria`: implementação em memória de `CotaDiaria`, com consumo por `(usuario_id, dia)` e limite configurável (padrão 3). |
 | `tests/test_proxy.py` | Comportamento isolado do Proxy, com substitutos de serviço e cota. |
 | `tests/test_dominio.py` | Restrições de resultado, beneficiário e tipo de conteúdo previstas na modelagem. |
 | `tests/test_cota.py` | Comportamento isolado da cota: uso ausente, consumos 0/2/3, limite configurável e inválido, consultas sem mutação, incremento e independência por usuário e data. |
+| `tests/test_servico_real.py` | Efeitos do serviço real, referências dos registros, consumo único e independência das coleções. |
 
 ## Executar os testes
 
@@ -31,7 +33,7 @@ Se o terminal já estiver na pasta `codigo`:
 python -m unittest discover -s subequipe02/tests -t . -v
 ```
 
-Cada teste monta objetos novos, sem acumular efeitos entre cenários. Os testes
+Cada teste monta objetos novos, sem acumular efeitos entre cenários. Os testes do Proxy
 C01–C03 usam o dia simulado **16/10/2026 UTC**, autor A1 com reputação 100,
 pergunta P101 com placar 0 e cota de referência 3:
 
@@ -54,7 +56,7 @@ testes **não demonstram** criação/armazenamento de registros pelo serviço re
 placar +1, reputação do autor +10 ou consumo +1 no caminho aceito. Esses efeitos
 serão verificados na integração dos componentes concretos.
 
-## Contratos para os próximos componentes
+## Contratos dos componentes
 
 - `ServicoVotacao` define `votar(s: SolicitacaoVotoPositivo) -> ResultadoVotacao`.
   O Proxy recebe `real: ServicoVotacao` e `cota: CotaDiaria` no construtor.
@@ -115,11 +117,51 @@ python -m unittest discover -s codigo/subequipe02/tests -t codigo -v
 
 A implementação da cota não altera o Proxy: o Proxy verifica a autorização, enquanto o serviço real é responsável por registrar o consumo após aceitar a votação.
 
+## Serviço real de votação
+
+`ServicoVotacaoReal`, implementado na [Issue #55](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/issues/55), é o participante RealSubject. Recebe uma `CotaDiaria` no construtor e implementa o mesmo contrato `ServicoVotacao` do Proxy.
+
+Em cada solicitação autorizada, `votar` cria um `Voto` e um `EventoReputacao`, guarda os registros, acrescenta 1 ao placar e 10 à reputação do autor, preserva a reputação do votante e registra um consumo na cota recebida. O resultado `REGISTRADO` contém uma mensagem e os mesmos objetos de voto e evento armazenados.
+
+As coleções privadas `_votos` e `_eventos` correspondem às propriedades internas do Diagrama de Classes. As propriedades de consulta `votos` e `eventos` retornam tuplas com os registros: permitem inspecionar os resultados sem expor as listas internas para alteração. Cada instância do serviço tem suas próprias coleções.
+
+Os testes do serviço usam um substituto de `CotaDiaria` para conferir a chamada única de consumo, seus parâmetros e a ausência de consultas de autorização. Cobrem C01, resposta simulada, solicitações válidas distintas e independência das instâncias. A contagem concreta da cota e os caminhos C02/C03 serão verificados na integração com o Proxy; este componente pressupõe que a solicitação já foi autorizada.
+
+### Exemplo isolado do serviço real
+
+Em uma sessão Python iniciada na pasta `codigo`:
+
+```python
+from datetime import date
+from subequipe02.cota import CotaDiariaEmMemoria
+from subequipe02.dominio import ConteudoVotavel, SolicitacaoVotoPositivo, Usuario
+from subequipe02.servico_real import ServicoVotacaoReal
+
+cota = CotaDiariaEmMemoria()
+real = ServicoVotacaoReal(cota)
+autor = Usuario("A1", 100)
+votante = Usuario("V1", 20)
+alvo = ConteudoVotavel("P101", "pergunta", autor, 0)
+dia = date(2026, 10, 16)
+solicitacao = SolicitacaoVotoPositivo(votante, alvo, dia)
+
+# Chamada isolada para inspecionar efeitos de uma solicitação já autorizada.
+# A aplicação receberá os pedidos pelo Proxy na composição dos componentes.
+resultado = real.votar(solicitacao)
+print(resultado.codigo.value)               # REGISTRADO
+print(alvo.placar, autor.reputacao)           # 1 110
+print(votante.reputacao)                     # 20
+print(cota.consultar_uso("V1", dia))          # 1
+print(len(real.votos), len(real.eventos))     # 1 1
+```
+
+Os testes deste componente usam o mesmo comando de execução da suíte indicado acima.
+
 ---
 
 
-O serviço `ServicoVotacaoReal` (Luis Guilherme) e a entrada FastAPI ainda serão
-implementados. A execução pressupõe entidades existentes, votante distinto do
+O núcleo já contém o Proxy, a cota diária e o serviço real. A entrada FastAPI e a
+composição final ainda serão implementadas. A execução pressupõe entidades existentes, votante distinto do
 autor e ausência de voto anterior no alvo. Concorrência, falhas durante o registro,
 persistência e autenticação reais
 não integram os cenários iniciais.
