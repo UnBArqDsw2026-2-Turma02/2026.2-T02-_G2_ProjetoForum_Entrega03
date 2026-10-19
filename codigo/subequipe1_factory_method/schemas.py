@@ -8,6 +8,7 @@ class PerguntaIn(BaseModel):
     titulo: str = Field(min_length=1)
     corpo: str = Field(min_length=1)
     autor: str = Field(min_length=1)
+    tags: list[str] = Field(default_factory=list)
 
 
 class RespostaIn(BaseModel):
@@ -48,6 +49,7 @@ class PerguntaOut(BaseModel):
     titulo: str
     corpo: str
     autor: str
+    tags: list[str]
     status: str
     data_criacao: datetime
     respostas: list[RespostaOut] = []

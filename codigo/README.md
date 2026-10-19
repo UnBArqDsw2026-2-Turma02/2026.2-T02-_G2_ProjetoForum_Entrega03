@@ -10,8 +10,8 @@ codigo/
 │   ├── __init__.py
 │   ├── produtos.py        # Conteudo (abstrato), Pergunta, Resposta e Comentario (concretos)
 │   ├── criadores.py       # CriadorDeConteudo (abstrato, com publicar()), CriadorDePergunta, CriadorDeResposta e CriadorDeComentario
-│   ├── repositorio.py     # RepositorioConteudo em memória
-│   ├── dependencias.py    # Providers do Depends(): repositórios, criadores e busca da pergunta (404)
+│   ├── repositorio.py     # RepositorioConteudo em memória (Singleton)
+│   ├── dependencias.py    # Providers do Depends(): repositório único, criadores e busca da pergunta (404)
 │   ├── schemas.py         # Schemas Pydantic de entrada e saída
 │   └── main.py            # API FastAPI e endpoints (Client)
 ├── tests/                 # Testes com pytest + TestClient

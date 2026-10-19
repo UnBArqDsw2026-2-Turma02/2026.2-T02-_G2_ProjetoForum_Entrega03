@@ -1,6 +1,8 @@
 import pytest
 from fastapi import HTTPException
 
+from subequipe3_strategy.ads.model.repositorio import RepositorioAds
+
 from subequipe3_strategy.ads.service import dependencias
 from subequipe3_strategy.ads.service.dependencias import (
     ConfiguracaoAds,
@@ -38,14 +40,20 @@ def test_repositorio_compartilhado_entre_requisicoes():
 
 
 def test_seletor_registra_as_politicas_disponiveis():
-    assert get_seletor().politicas() == ("match_exato",)
+    assert get_seletor().politicas() == ("maior_saldo", "match_exato")
+    assert get_seletor().escolher("maior_saldo").obter_nome() == "maior_saldo"
 
 
-def test_fallback_pendente_da_issue_26_responde_503():
-    with pytest.raises(HTTPException) as erro:
-        get_estrategia_fallback()
-    assert erro.value.status_code == 503
-    assert "#26" in erro.value.detail
+def test_fallback_integrado_retorna_estrategia_generica(): # Issue 26
+    from subequipe3_strategy.ads.model.generico import (
+        EstrategiaAnuncioGenerico,
+    )
+
+    repositorio = RepositorioAds.seed()
+    estrategia = get_estrategia_fallback(repositorio)
+
+    assert isinstance(estrategia, EstrategiaAnuncioGenerico)
+    assert estrategia.obter_nome() == "generico"
 
 
 def test_controlador_novo_por_requisicao_com_a_politica_configurada():

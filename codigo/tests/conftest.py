@@ -1,42 +1,28 @@
-from dataclasses import dataclass
-
 import pytest
 from fastapi.testclient import TestClient
 
-from subequipe1_factory_method.dependencias import (
-    get_repositorio_comentarios,
-    get_repositorio_perguntas,
-    get_repositorio_respostas,
-)
 from subequipe1_factory_method.main import app
 from subequipe1_factory_method.repositorio import RepositorioConteudo
 
 
-@dataclass
-class Repositorios:
-    perguntas: RepositorioConteudo
-    respostas: RepositorioConteudo
-    comentarios: RepositorioConteudo
+@pytest.fixture(autouse=True)
+def singleton_vazio():
+    # Cada teste começa com um Singleton novo e vazio, então um teste não enxerga dados de outro
+    RepositorioConteudo._resetar()
+    yield
+    RepositorioConteudo._resetar()
 
 
 @pytest.fixture
-def repositorios() -> Repositorios:
-    return Repositorios(
-        perguntas=RepositorioConteudo(),
-        respostas=RepositorioConteudo(),
-        comentarios=RepositorioConteudo(),
-    )
+def repositorio() -> RepositorioConteudo:
+    return RepositorioConteudo.instancia()
 
 
 @pytest.fixture
-def client(repositorios: Repositorios):
-    # Cada teste usa repositórios novos, então um teste não enxerga dados de outro
-    app.dependency_overrides[get_repositorio_perguntas] = lambda: repositorios.perguntas
-    app.dependency_overrides[get_repositorio_respostas] = lambda: repositorios.respostas
-    app.dependency_overrides[get_repositorio_comentarios] = lambda: repositorios.comentarios
+def client():
+    # Sem dependency_overrides: as requisições usam o Singleton de verdade
     with TestClient(app) as cliente:
         yield cliente
-    app.dependency_overrides.clear()
 
 
 @pytest.fixture

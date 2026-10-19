@@ -26,7 +26,12 @@ class CriadorDeConteudo(ABC):
 # Concrete Creator (GoF): implementa o Factory Method para produzir Perguntas
 class CriadorDePergunta(CriadorDeConteudo):
     def criar_conteudo(self, dados: dict) -> Conteudo:
-        return Pergunta(corpo=dados["corpo"], titulo=dados["titulo"], autor=dados["autor"])
+        return Pergunta(
+            corpo=dados["corpo"],
+            titulo=dados["titulo"],
+            autor=dados["autor"],
+            tags=dados.get("tags"),
+        )
 
 
 # Concrete Creator (GoF): implementa o Factory Method para produzir Respostas

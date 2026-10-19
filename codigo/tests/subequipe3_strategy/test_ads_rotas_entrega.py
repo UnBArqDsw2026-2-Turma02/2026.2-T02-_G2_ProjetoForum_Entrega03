@@ -4,7 +4,11 @@ from uuid import UUID
 import pytest
 from fastapi.testclient import TestClient
 
+from subequipe3_strategy.ads.model.anuncio import AnuncioGenerico
+from subequipe3_strategy.ads.model.campanha import Tag
+from subequipe3_strategy.ads.model.contexto import Pergunta
 from subequipe3_strategy.ads.model.repositorio import RepositorioAds
+
 from subequipe3_strategy.ads.service.dependencias import (
     ConfiguracaoAds,
     get_configuracao_ads,
@@ -102,10 +106,15 @@ def test_identificador_invalido_responde_422(cliente_ads):
     assert cliente_ads.get("/perguntas/nao-e-uuid/pagina").status_code == 422
 
 
-def test_sem_fallback_integrado_responde_503(configurar_app):
-    resposta = configurar_app(com_fallback=False).get(f"/perguntas/{PERGUNTA_COM_MATCH}/pagina")
-    assert resposta.status_code == 503
-    assert "#26" in resposta.json()["detail"]
+def test_sem_fallback_funciona_quando_ha_match(configurar_app): # Antigo test_sem_fallback_integrado_responde_503
+    cliente = configurar_app(com_fallback=False)
+
+    resposta = cliente.get(
+        f"/perguntas/{PERGUNTA_COM_MATCH}/pagina"
+    )
+
+    assert resposta.status_code == 200
+    assert "Curso de Python" in resposta.text
 
 
 def test_politica_nao_registrada_responde_503(configurar_app):
@@ -157,3 +166,54 @@ def test_rotas_documentadas_no_openapi(cliente_ads):
 def test_rotas_de_conteudo_continuam_disponiveis(cliente_ads):
     resposta = cliente_ads.post("/perguntas", json={"titulo": "Factory?", "corpo": "Dúvida", "autor": "Maria"})
     assert resposta.status_code == 201
+
+
+def test_fallback_real_usa_repositorio_injetado(): # Teste que cria repositório isolado com anúncio id=900 e fallback real
+    anuncio_id = UUID(int=900)
+    pergunta_id = UUID(int=902)
+
+    anuncio_padrao = AnuncioGenerico(
+        anuncio_id,
+        "Anúncio de teste",
+        "/static/teste.png",
+        "/teste",
+        mensagem_padrao="Anúncio injetado.",
+    )
+
+    pergunta = Pergunta(
+        pergunta_id,
+        "Pergunta sem campanha compatível",
+        [Tag("sem-match")],
+    )
+
+    repositorio_teste = RepositorioAds(
+        campanhas=[],
+        perguntas=[pergunta],
+        anuncio_padrao=anuncio_padrao,
+    )
+
+    app.dependency_overrides[get_repositorio_ads] = (
+        lambda: repositorio_teste
+    )
+    app.dependency_overrides[get_configuracao_ads] = (
+        lambda: ConfiguracaoAds("match_exato")
+    )
+    app.dependency_overrides.pop(get_estrategia_fallback, None)
+
+    try:
+        with TestClient(app) as cliente:
+            resposta = cliente.get(
+                f"/perguntas/{pergunta_id}/pagina"
+            )
+
+        assert resposta.status_code == 200
+        assert "Anúncio injetado." in resposta.text
+
+        estatisticas = repositorio_teste.obter_anuncio(
+            anuncio_id
+        ).obter_estatisticas()
+
+        assert estatisticas.visualizacoes == 1
+        assert estatisticas.cliques == 0
+    finally:
+        app.dependency_overrides.clear()

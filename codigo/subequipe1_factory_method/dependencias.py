@@ -14,47 +14,37 @@ from .criadores import (
 from .produtos import Pergunta
 from .repositorio import RepositorioConteudo
 
-# Repositórios em memória: um por tipo de produto, para a busca não precisar checar tipo
-_repositorio_perguntas = RepositorioConteudo()
-_repositorio_respostas = RepositorioConteudo()
-_repositorio_comentarios = RepositorioConteudo()
 
-
-def get_repositorio_perguntas() -> RepositorioConteudo:
-    return _repositorio_perguntas
-
-
-def get_repositorio_respostas() -> RepositorioConteudo:
-    return _repositorio_respostas
-
-
-def get_repositorio_comentarios() -> RepositorioConteudo:
-    return _repositorio_comentarios
+def get_repositorio() -> RepositorioConteudo:
+    # Client do Singleton: único ponto da API que chama instancia()
+    return RepositorioConteudo.instancia()
 
 
 def get_criador_de_pergunta(
-    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio_perguntas)],
+    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio)],
 ) -> CriadorDeConteudo:
     return CriadorDePergunta(repositorio)
 
 
 def get_criador_de_resposta(
-    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio_respostas)],
+    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio)],
 ) -> CriadorDeConteudo:
     return CriadorDeResposta(repositorio)
 
 
 def get_criador_de_comentario(
-    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio_comentarios)],
+    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio)],
 ) -> CriadorDeConteudo:
     return CriadorDeComentario(repositorio)
 
 
 def obter_pergunta(
     pergunta_id: UUID,
-    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio_perguntas)],
+    repositorio: Annotated[RepositorioConteudo, Depends(get_repositorio)],
 ) -> Pergunta:
-    pergunta = repositorio.buscar(pergunta_id)
+    conteudo = repositorio.buscar_por_id(pergunta_id)
+    # O repositório é único para todos os tipos; como_pergunta() é polimórfico, sem isinstance (RNF01)
+    pergunta = conteudo.como_pergunta() if conteudo is not None else None
     if pergunta is None:
         raise HTTPException(status_code=404, detail="Pergunta não encontrada")
     return pergunta
