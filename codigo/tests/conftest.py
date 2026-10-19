@@ -27,6 +27,8 @@ def client():
 
 @pytest.fixture
 def pergunta_id(client: TestClient) -> str:
-    resposta = client.post("/perguntas", json={"titulo": "O que é Factory Method?", "corpo": "Alguém explica?"})
+    resposta = client.post(
+        "/perguntas", json={"titulo": "O que é Factory Method?", "corpo": "Alguém explica?", "autor": "Maria"}
+    )
     assert resposta.status_code == 201
     return resposta.json()["id"]

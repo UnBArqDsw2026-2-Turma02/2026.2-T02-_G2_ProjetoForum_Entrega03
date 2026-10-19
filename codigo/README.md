@@ -1,6 +1,6 @@
 # Fórum — GoF Criacional: Factory Method (SubEquipe 01)
 
-Implementação do padrão criacional **Factory Method** aplicado à criação de conteúdos (`Pergunta`, `Resposta`) no fórum utilizando Python e FastAPI.
+Implementação do padrão criacional **Factory Method** aplicado à criação de conteúdos (`Pergunta`, `Resposta`, `Comentario`) no fórum utilizando Python e FastAPI.
 
 ## Estrutura do Código
 
@@ -8,13 +8,15 @@ Implementação do padrão criacional **Factory Method** aplicado à criação d
 codigo/
 ├── subequipe1_factory_method/
 │   ├── __init__.py
-│   ├── produtos.py        # Conteudo (abstrato), Pergunta e Resposta (concretos)
-│   ├── criadores.py       # CriadorDeConteudo (abstrato, com publicar()), CriadorDePergunta e CriadorDeResposta
-│   ├── repositorio.py     # RepositorioConteudo em memória
-│   ├── dependencias.py    # Providers do Depends(): repositórios, criadores e busca da pergunta (404)
+│   ├── produtos.py        # Conteudo (abstrato), Pergunta, Resposta e Comentario (concretos)
+│   ├── criadores.py       # CriadorDeConteudo (abstrato, com publicar()), CriadorDePergunta, CriadorDeResposta e CriadorDeComentario
+│   ├── repositorio.py     # RepositorioConteudo em memória (Singleton)
+│   ├── dependencias.py    # Providers do Depends(): repositório único, criadores e busca da pergunta (404)
 │   ├── schemas.py         # Schemas Pydantic de entrada e saída
 │   └── main.py            # API FastAPI e endpoints (Client)
 ├── tests/                 # Testes com pytest + TestClient
+├── validacao_subequipe1/
+│   └── painel_streamlit.py  # Painel para validar a API pelo navegador
 ├── pytest.ini
 ├── requirements.txt       # Dependências do projeto (FastAPI, pytest)
 └── README.md
@@ -25,10 +27,13 @@ codigo/
 | Método | Rota | Criador usado | Respostas |
 |---|---|---|---|
 | POST | `/perguntas` | `CriadorDePergunta` | 201, 422 |
-| GET | `/perguntas/{pergunta_id}` | — | 200 (com as respostas), 404 |
+| GET | `/perguntas/{pergunta_id}` | — | 200 (com as respostas e os comentários), 404 |
 | POST | `/perguntas/{pergunta_id}/respostas` | `CriadorDeResposta` | 201, 404, 422 |
+| POST | `/perguntas/{pergunta_id}/comentarios` | `CriadorDeComentario` | 201, 404, 422 |
 
-Os controllers recebem o criador via `Depends()` tipado como o abstrato `CriadorDeConteudo` e só chamam `publicar()`. Nenhum controller sabe qual classe concreta é instanciada.
+Os controllers recebem o criador via `Depends()` tipado como o abstrato `CriadorDeConteudo` e só chamam `publicar()`. Nenhum controller sabe qual classe concreta é instanciada. Todo conteúdo exige `autor` no corpo da requisição.
+
+O `Comentario` (F4, issue #9) mostra o princípio aberto/fechado: entrou com uma subclasse de `Conteudo`, uma de `CriadorDeConteudo` e uma rota nova, sem alterar `CriadorDePergunta`, `CriadorDeResposta` nem as rotas que já existiam.
 
 ## Como Instalar e Executar
 
@@ -56,6 +61,13 @@ Os controllers recebem o criador via `Depends()` tipado como o abstrato `Criador
    ```bash
    pytest -v
    ```
+
+6. **Validar pelo navegador (opcional):** com a API rodando no passo 3, em outro terminal:
+   ```bash
+   pip install -r requirements-dev.txt
+   streamlit run validacao_subequipe1/painel_streamlit.py
+   ```
+   O painel fala com a API só por HTTP: publica pergunta, resposta e comentário, mostra qual Concrete Creator atende cada rota e roda os cenários que a arquitetura pede (201, 404 e 422 nas bordas).
 
 ## Ads — SubEquipe 03 (Strategy)
 

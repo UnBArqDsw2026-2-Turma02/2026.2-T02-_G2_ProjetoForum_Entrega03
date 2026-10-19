@@ -7,6 +7,7 @@ from uuid import uuid4
 import pytest
 
 from subequipe1_factory_method.dependencias import (
+    get_criador_de_comentario,
     get_criador_de_pergunta,
     get_criador_de_resposta,
     get_repositorio,
@@ -55,7 +56,7 @@ def test_instancia_eh_thread_safe(monkeypatch):
 
 def test_resetar_gera_instancia_nova_e_vazia():
     antiga = RepositorioConteudo.instancia()
-    antiga.salvar(Pergunta(corpo="corpo", titulo="titulo"))
+    antiga.salvar(Pergunta(corpo="corpo", titulo="titulo", autor="Maria"))
 
     RepositorioConteudo._resetar()
     nova = RepositorioConteudo.instancia()
@@ -66,7 +67,7 @@ def test_resetar_gera_instancia_nova_e_vazia():
 
 def test_salvar_e_buscar_por_id():
     repositorio = RepositorioConteudo.instancia()
-    pergunta = Pergunta(corpo="corpo", titulo="titulo")
+    pergunta = Pergunta(corpo="corpo", titulo="titulo", autor="Maria")
 
     repositorio.salvar(pergunta)
 
@@ -76,7 +77,7 @@ def test_salvar_e_buscar_por_id():
 
 def test_atualizar_substitui_conteudo_salvo():
     repositorio = RepositorioConteudo.instancia()
-    pergunta = Pergunta(corpo="corpo", titulo="titulo")
+    pergunta = Pergunta(corpo="corpo", titulo="titulo", autor="Maria")
     repositorio.salvar(pergunta)
     pergunta.corpo = "corpo editado"
 
@@ -87,20 +88,22 @@ def test_atualizar_substitui_conteudo_salvo():
 
 def test_atualizar_conteudo_nao_salvo_lanca_erro():
     with pytest.raises(KeyError):
-        RepositorioConteudo.instancia().atualizar(Pergunta(corpo="corpo", titulo="titulo"))
+        RepositorioConteudo.instancia().atualizar(Pergunta(corpo="corpo", titulo="titulo", autor="Maria"))
 
 
 def test_criadores_compartilham_a_mesma_instancia():
     criador_de_pergunta = get_criador_de_pergunta(get_repositorio())
     criador_de_resposta = get_criador_de_resposta(get_repositorio())
+    criador_de_comentario = get_criador_de_comentario(get_repositorio())
 
     assert criador_de_pergunta.repositorio is criador_de_resposta.repositorio
+    assert criador_de_comentario.repositorio is criador_de_pergunta.repositorio
 
 
 def test_resposta_aparece_no_get_da_pergunta(client):
     # Ponta a ponta, sem dependency_overrides: as três requisições usam o mesmo Singleton
-    pergunta_id = client.post("/perguntas", json={"titulo": "Singleton?", "corpo": "Como funciona?"}).json()["id"]
-    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": "Uma instância só."}).json()
+    pergunta_id = client.post("/perguntas", json={"titulo": "Singleton?", "corpo": "Como funciona?", "autor": "Maria"}).json()["id"]
+    criada = client.post(f"/perguntas/{pergunta_id}/respostas", json={"corpo": "Uma instância só.", "autor": "João"}).json()
 
     resposta = client.get(f"/perguntas/{pergunta_id}")
 
