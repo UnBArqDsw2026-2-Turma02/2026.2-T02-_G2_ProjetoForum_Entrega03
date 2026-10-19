@@ -1,0 +1,152 @@
+classDiagram
+direction LR
+class rotas:::api {
+  <<APIRouter>>
+  +exibir_pergunta(pergunta_id: UUID) HTMLResponse
+  +registrar_clique(anuncio_id: UUID) Response
+}
+class dependencias:::api {
+  <<Depends>>
+  +get_seletor() SeletorDeEstrategia
+  +get_estrategia_fallback(repositorio) EstrategiaSelecaoAnuncio
+  +get_delivery_service() ControladorEntrega
+}
+class PerguntaView:::api {
+  <<Jinja2Templates>>
+  +renderizar(request, entrega) HTMLResponse
+}
+class AnuncioResponse:::api {
+  <<Pydantic_BaseModel>>
+  +id: UUID
+  +titulo: str
+  +link_destino: str
+  +banner_url: str
+}
+class ControladorEntrega:::contexto {
+  <<Context>>
+  -estrategia: EstrategiaSelecaoAnuncio
+  -fallback: EstrategiaSelecaoAnuncio
+  +definir_estrategia(politica: str) None
+  +entregar_anuncio(pergunta_id: UUID) EntregaAnuncio
+  +registrar_visualizacao(anuncio_id: UUID) None
+  +registrar_clique(anuncio_id: UUID) None
+}
+class EntregaAnuncio:::contexto {
+  <<dataclass_frozen>>
+  +pergunta: Pergunta
+  +anuncio: Anuncio
+  +politica: str
+  +usou_fallback: bool
+}
+class SeletorDeEstrategia:::contexto {
+  -estrategias: dict
+  +registrar(estrategia) None
+  +escolher(politica: str) EstrategiaSelecaoAnuncio
+}
+class EstrategiaSelecaoAnuncio:::contrato {
+  <<Protocol>>
+  +selecionar_anuncio(pergunta: Pergunta, campanhas: list~Campanha~) Anuncio | None
+  +obter_nome() str
+}
+class EstrategiaMatchExatoDeTag:::estrategia {
+  +selecionar_anuncio(pergunta, campanhas) Anuncio | None
+  +obter_nome() str
+}
+class EstrategiaMaiorSaldoNaTag:::estrategia {
+  +selecionar_anuncio(pergunta, campanhas) Anuncio | None
+  +obter_nome() str
+}
+class EstrategiaAnuncioGenerico:::estrategia {
+  -anuncio_padrao: AnuncioGenerico
+  +selecionar_anuncio(pergunta, campanhas) AnuncioGenerico
+  +obter_nome() str
+}
+class RepositorioPerguntas:::contrato {
+  <<Protocol>>
+  +obter(pergunta_id: UUID) Pergunta | None
+}
+class RepositorioCampanhas:::contrato {
+  <<Protocol>>
+  +listar_ativas() list~Campanha~
+}
+class RepositorioMetricas:::contrato {
+  <<Protocol>>
+  +registrar_visualizacao(anuncio_id: UUID) None
+  +registrar_clique_atomico(anuncio_id: UUID) None
+}
+class RepositorioAds:::metricas {
+  <<adaptador_em_memoria>>
+  +anuncio_padrao: AnuncioGenerico
+  +seed() RepositorioAds
+}
+class Pergunta:::conteudo {
+  <<dataclass_frozen>>
+  +id: UUID
+  +titulo: str
+  +tags: list~Tag~
+}
+class Tag:::conteudo {
+  <<dataclass_frozen>>
+  +nome: str
+}
+class Campanha:::dominio {
+  +id: UUID
+  +status: StatusCampanha
+  +tags_alvo: list~Tag~
+  +saldo_restante: Decimal
+  +custo_por_clique: Decimal
+  +anuncios: list~Anuncio~
+  +possui_orcamento() bool
+  +debitar_clique(valor: Decimal) None
+}
+class Anuncio:::dominio {
+  <<dataclass_ABC>>
+  +id: UUID
+  +titulo: str
+  +renderizar() str*
+  +obter_estatisticas() EstatisticasAds
+}
+class AnuncioContextual:::dominio
+class AnuncioGenerico:::dominio
+class EstatisticasAds:::metricas {
+  +anuncio_id: UUID
+  +visualizacoes: int
+  +cliques: int
+}
+rotas ..> dependencias : Depends
+rotas ..> ControladorEntrega : delega
+rotas ..> PerguntaView : renderiza
+PerguntaView ..> AnuncioResponse : valida DTO
+PerguntaView ..> EntregaAnuncio : le
+ControladorEntrega --> EstrategiaSelecaoAnuncio : principal e fallback
+ControladorEntrega --> SeletorDeEstrategia : seletor
+ControladorEntrega ..> EntregaAnuncio : retorna
+SeletorDeEstrategia --> EstrategiaSelecaoAnuncio : registro
+EstrategiaSelecaoAnuncio <|.. EstrategiaMatchExatoDeTag
+EstrategiaSelecaoAnuncio <|.. EstrategiaMaiorSaldoNaTag
+EstrategiaSelecaoAnuncio <|.. EstrategiaAnuncioGenerico
+ControladorEntrega --> RepositorioPerguntas : perguntas
+ControladorEntrega --> RepositorioCampanhas : campanhas
+ControladorEntrega --> RepositorioMetricas : metricas
+RepositorioPerguntas <|.. RepositorioAds
+RepositorioCampanhas <|.. RepositorioAds
+RepositorioMetricas <|.. RepositorioAds
+dependencias ..> RepositorioAds : injeta mesma instancia
+dependencias ..> ControladorEntrega : cria por requisicao
+EstrategiaAnuncioGenerico --> AnuncioGenerico : instancia configurada
+Pergunta --> Tag : tags
+Campanha --> Tag : tags_alvo
+Campanha --> AnuncioContextual : contem
+Anuncio <|-- AnuncioContextual
+Anuncio <|-- AnuncioGenerico
+Anuncio --> EstatisticasAds : estatisticas
+note for RepositorioAds "Estado em memoria e trava RLock no processo.<br/>SQL e integracao das tags reais de Conteudo nao implementados."
+note for ControladorEntrega "ADS_POLITICA: match_exato ou maior_saldo.<br/>Principal retorna None: Context chama fallback.<br/>GET /perguntas/{id}/pagina; POST /anuncios/{id}/cliques."
+
+classDef contexto fill:#cfe2ff,stroke:#7794ba,color:#172b4d
+classDef estrategia fill:#dceaff,stroke:#7794ba,color:#172b4d
+classDef contrato fill:#ffffff,stroke:#718096,color:#172b4d
+classDef conteudo fill:#ffdfbd,stroke:#cb884c,color:#50351b
+classDef dominio fill:#ffd4d4,stroke:#b77575,color:#503030
+classDef api fill:#e7ddff,stroke:#9780bd,color:#35254e
+classDef metricas fill:#d6efdd,stroke:#71a684,color:#21482f
