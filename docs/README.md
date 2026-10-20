@@ -53,12 +53,6 @@ O código de cada subequipe pode ser consultado no próprio site, na página
 <p align="center"><b>Figura 1</b> — Factory Method aplicado à criação de conteúdo do fórum (SubEquipe_01, rascunho em revisão na branch <code>subgrupo-01</code>).<br>
 <b>Fonte:</b> Elaborado pela SubEquipe_01.</p>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/main/docs/Base/Relat%C3%B3rios/assets/diagrama_classes_proxy_v1_0.svg" alt="Diagrama de classes do Proxy de proteção da votação positiva" width="700">
-</p>
-<p align="center"><b>Figura 2</b> — Proxy de proteção da votação positiva (SubEquipe_02, versão 1.0, incorporada à main).<br>
-<b>Autor:</b> Leonardo de Aquino. | <b>Arquivo-fonte:</b> <a href="https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/blob/main/docs/Base/Relat%C3%B3rios/assets/diagrama_classes_proxy_v1_0.puml">PlantUML</a>.</p>
-
 ## Há algo a ser executado?
 
 (x) SIM
