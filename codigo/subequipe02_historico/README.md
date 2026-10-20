@@ -1,6 +1,6 @@
 # Consulta protegida ao histórico de votos — Proxy de proteção
 
-**Vídeo da implementação:** _link a ser inserido após a gravação_.
+**Vídeo da implementação:** (https://www.youtube.com/watch?v=ylFU9Lbb8sQ).
 
 ## O problema
 
