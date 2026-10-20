@@ -45,14 +45,6 @@ Generativa.
 O código de cada subequipe pode ser consultado no próprio site, na página
 "Código" dentro da seção de cada subequipe, no menu lateral.
 
-## Screenshots da Terceira Entrega
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/subgrupo-01/rascunho_diagramas/factory_method_forum.svg" alt="Diagrama de classes do Factory Method aplicado ao fórum" width="700">
-</p>
-<p align="center"><b>Figura 1</b> — Factory Method aplicado à criação de conteúdo do fórum (SubEquipe_01, rascunho em revisão na branch <code>subgrupo-01</code>).<br>
-<b>Fonte:</b> Elaborado pela SubEquipe_01.</p>
-
 ## Há algo a ser executado?
 
 (x) SIM
