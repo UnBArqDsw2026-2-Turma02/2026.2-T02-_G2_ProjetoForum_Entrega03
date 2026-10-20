@@ -59,37 +59,13 @@ O código de cada subequipe pode ser consultado no próprio site, na página
 
 ( ) NÃO
 
-O código fica na pasta [`codigo/`](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/tree/main/codigo)
-do repositório, com uma pasta por subequipe. Requer Python 3.10 ou superior.
+O código está na pasta [`codigo/`](https://github.com/UnBArqDsw2026-2-Turma02/2026.2-T02-_G2_ProjetoForum_Entrega03/tree/main/codigo), organizado por subequipe. Cada implementação possui seus próprios requisitos, dependências e instruções de execução:
 
-**Para a SubEquipe_02**, a aplicação e a suíte completa requerem **Python 3.11
-ou superior**, com ambiente e dependências próprios. Consulte a
-[página Código: Proxy de proteção](/Base/Codigos/1.1.2.Codigo_SubEquipe_02.md)
-para iniciar a demonstração e executar seus testes. Os comandos abaixo iniciam
-a API Factory Method da SubEquipe_01; eles não iniciam a demonstração do Proxy.
+- **SubEquipe_01 — Factory Method:** [Como executar](/Base/Codigos/1.1.1.Codigo_SubEquipe_01.md?id=como-executar).
+- **SubEquipe_02 — Proxy:** [Como executar](/Base/Codigos/1.1.2.Codigo_SubEquipe_02.md?id=como-executar).
+- **SubEquipe_03 — Strategy:** [Execução e demonstração](/Base/Codigos/1.1.3.Codigo_SubEquipe_03.md?id=execução-e-demonstração).
 
-1. **Criar e ativar o ambiente virtual**, a partir da pasta `codigo/`:
-   ```shell
-   python -m venv .venv
-   source .venv/bin/activate      # Linux/macOS
-   .venv\Scripts\activate         # Windows
-   ```
-2. **Instalar as dependências** (FastAPI e pytest):
-   ```shell
-   pip install -r requirements-dev.txt
-   ```
-3. **Executar os testes**:
-   ```shell
-   python -m pytest -q
-   ```
-4. **Subir a API** e abrir a documentação interativa (Swagger UI) em
-   `http://127.0.0.1:8000/docs`:
-   ```shell
-   uvicorn subequipe1_factory_method.main:app --reload
-   ```
-
-As instruções específicas de cada padrão estão na página "Código" de cada
-subequipe.
+Os links abrem diretamente a seção correspondente. Consulte as instruções da subequipe para preparar o ambiente, iniciar a aplicação e executar os testes.
 
 ## Informações Complementares
 
